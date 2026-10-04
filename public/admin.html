@@ -7,7 +7,33 @@
 <div class="glass panel"><h2>📚 Uploaded Materials</h2><div id="items"></div></div></section></main>
 <script>
 async function me(){let x=await fetch("/api/me").then(r=>r.json());if(x.loggedIn){login.style.display="none";dash.style.display="block";load()}}
-async function login(){let r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email.value,password:password.value})});if(r.ok){login.style.display="none";dash.style.display="block";load()}else msg.textContent=(await r.json()).error}
+async function login(){
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if(!email || !password){
+      alert("Email और Password दोनों भरें");
+      return;
+    }
+
+    const r = await fetch("/api/login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email,password})
+    });
+
+    const data = await r.json();
+
+    if(r.ok){
+      location.reload();
+    }else{
+      alert(data.error || "Login failed");
+    }
+  }catch(err){
+    alert("Server से connection नहीं हो रहा: " + err.message);
+  }
+}
 async function logout(){await fetch("/api/logout",{method:"POST"});location.reload()}
 form.onsubmit=async e=>{e.preventDefault();let r=await fetch("/api/materials",{method:"POST",body:new FormData(form)});upmsg.textContent=r.ok?"Uploaded ✓":"Upload failed";if(r.ok){form.reset();load()}}
 async function load(){let a=await fetch("/api/materials").then(r=>r.json());items.innerHTML=a.map(x=>`<div class="item glass"><b>${esc(x.title)}</b><span>${esc(x.subject)} • Class ${esc(x.class_name)} • ${esc(x.type)}</span><a href="/uploads/${encodeURIComponent(x.stored_name)}" target="_blank">Open</a><button onclick="del(${x.id})">Delete</button></div>`).join("")||"<p>No materials yet.</p>"}
