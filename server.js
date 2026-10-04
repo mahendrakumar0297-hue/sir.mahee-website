@@ -1,800 +1,414 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-
-  <title>Sir Mahee Admin</title>
-
-  <link
-    rel="stylesheet"
-    href="/style.css"
-  >
-</head>
-
-<body>
-
-  <nav>
-    <b>🔐 Sir Mahee Admin</b>
-
-    <a href="/">
-      Student Website
-    </a>
-  </nav>
-
-  <main class="admin">
-
-    <!-- ================= LOGIN ================= -->
-
-    <section
-      id="loginSection"
-      class="glass panel"
-    >
-
-      <h1>Admin Login</h1>
-
-      <input
-        id="email"
-        type="email"
-        placeholder="Email"
-        autocomplete="username"
-      >
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-      >
-
-      <button
-        id="loginButton"
-        type="button"
-      >
-        Login
-      </button>
-
-      <p id="loginMessage"></p>
-
-    </section>
-
-
-    <!-- ================= DASHBOARD ================= -->
-
-    <section
-      id="dashboard"
-      style="display:none"
-    >
-
-      <div class="glass panel">
-
-        <div class="row">
-
-          <div>
-            <h1>📤 Content Manager</h1>
-
-            <p>
-              Upload and manage your study material.
-            </p>
-          </div>
-
-          <button
-            id="logoutButton"
-            class="btn"
-            type="button"
-          >
-            Logout
-          </button>
-
-        </div>
-
-
-        <!-- ================= UPLOAD FORM ================= -->
-
-        <form
-          id="materialForm"
-          enctype="multipart/form-data"
-        >
-
-          <div class="two">
-
-            <label>
-              Title
-
-              <input
-                name="title"
-                required
-                placeholder="Tenses — Complete Notes"
-              >
-            </label>
-
-
-            <label>
-              Class
-
-              <select name="className">
-
-                <option>All Classes</option>
-
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-
-              </select>
-
-            </label>
-
-
-            <label>
-              Subject
-
-              <select name="subject">
-
-                <option>English</option>
-                <option>Hindi</option>
-                <option>Maths</option>
-                <option>Science</option>
-                <option>Social Science</option>
-                <option>Rajasthan GK</option>
-                <option>Competitive Exams</option>
-                <option>Other</option>
-
-              </select>
-
-            </label>
-
-
-            <label>
-              Type
-
-              <select name="type">
-
-                <option>Notes</option>
-                <option>PDF</option>
-                <option>Worksheet</option>
-                <option>Question Paper</option>
-                <option>Video</option>
-                <option>Audio</option>
-                <option>Image</option>
-                <option>Other</option>
-
-              </select>
-
-            </label>
-
-
-            <label>
-              Chapter
-
-              <input
-                name="chapter"
-                placeholder="Grammar / Tenses"
-              >
-
-            </label>
-
-
-            <label>
-              Description
-
-              <textarea
-                name="description"
-                placeholder="Short description"
-              ></textarea>
-
-            </label>
-
-          </div>
-
-
-          <label>
-            File
-
-            <input
-              name="file"
-              type="file"
-              required
-            >
-          </label>
-
-
-          <button
-            class="btn"
-            type="submit"
-          >
-            Upload Material
-          </button>
-
-          <p id="uploadMessage"></p>
-
-        </form>
-
-      </div>
-
-
-      <!-- ================= MATERIALS ================= -->
-
-      <div class="glass panel">
-
-        <h2>
-          📚 Uploaded Materials
-        </h2>
-
-        <div id="items">
-          Loading...
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-<script>
-
-"use strict";
-
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const Database = require("better-sqlite3");
+const bcrypt = require("bcryptjs");
+const multer = require("multer");
+const cookieSession = require("cookie-session");
+
+require("dotenv").config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+const ROOT = __dirname;
+const PUBLIC = path.join(ROOT, "public");
+const UPLOADS = path.join(ROOT, "uploads");
+
+fs.mkdirSync(UPLOADS, { recursive: true });
+
+const db = new Database(path.join(ROOT, "sir_mahee.db"));
+
+db.pragma("journal_mode = WAL");
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS materials (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  class_name TEXT,
+  subject TEXT,
+  chapter TEXT,
+  description TEXT,
+  type TEXT,
+  filename TEXT,
+  stored_name TEXT,
+  mime TEXT,
+  size INTEGER,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+`);
 
 /* =========================
-   ELEMENTS
+   ADMIN ACCOUNT
 ========================= */
 
-const loginSection =
-  document.getElementById("loginSection");
+const adminEmail =
+  process.env.ADMIN_EMAIL || "admin@sir.mahee.com";
 
-const dashboard =
-  document.getElementById("dashboard");
+const adminPassword =
+  process.env.ADMIN_PASSWORD || "change-this-password";
 
-const emailInput =
-  document.getElementById("email");
+const existingAdmin = db
+  .prepare("SELECT id FROM users WHERE email = ?")
+  .get(adminEmail);
 
-const passwordInput =
-  document.getElementById("password");
+if (!existingAdmin) {
+  const hash = bcrypt.hashSync(adminPassword, 12);
 
-const loginButton =
-  document.getElementById("loginButton");
+  db.prepare(`
+    INSERT INTO users (email, password_hash)
+    VALUES (?, ?)
+  `).run(adminEmail, hash);
+} else {
+  const hash = bcrypt.hashSync(adminPassword, 12);
 
-const logoutButton =
-  document.getElementById("logoutButton");
-
-const loginMessage =
-  document.getElementById("loginMessage");
-
-const materialForm =
-  document.getElementById("materialForm");
-
-const uploadMessage =
-  document.getElementById("uploadMessage");
-
-const items =
-  document.getElementById("items");
-
+  db.prepare(`
+    UPDATE users
+    SET password_hash = ?
+    WHERE email = ?
+  `).run(hash, adminEmail);
+}
 
 /* =========================
-   API HELPER
+   MIDDLEWARE
 ========================= */
 
-async function apiFetch(url, options = {}) {
+app.set("trust proxy", 1);
 
-  const response = await fetch(
-    url,
-    {
-      ...options,
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-      credentials: "include"
-    }
-  );
+app.use(
+  cookieSession({
+    name: "sir_mahee_session",
+    keys: [
+      process.env.SESSION_SECRET || "change-this-session-secret"
+    ],
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  })
+);
 
-  let data = {};
+app.use("/uploads", express.static(UPLOADS));
+app.use(express.static(PUBLIC));
 
-  try {
-    data = await response.json();
-  } catch (error) {
-    data = {};
+/* =========================
+   AUTH MIDDLEWARE
+========================= */
+
+function auth(req, res, next) {
+  if (req.session && req.session.userId) {
+    return next();
   }
 
-  return {
-    response,
-    data
-  };
+  return res.status(401).json({
+    error: "Login required"
+  });
 }
 
-
 /* =========================
-   CHECK LOGIN
+   FILE UPLOAD
 ========================= */
 
-async function checkLogin() {
+const maxMB = Number(process.env.MAX_FILE_MB || 20);
 
-  try {
+const storage = multer.diskStorage({
+  destination: UPLOADS,
 
-    const { response, data } =
-      await apiFetch("/api/me");
+  filename: (req, file, cb) => {
+    const safeName =
+      Date.now() +
+      "-" +
+      Math.random().toString(36).slice(2, 10) +
+      "-" +
+      file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-    if (
-      response.ok &&
-      data.loggedIn === true
-    ) {
-
-      showDashboard();
-
-      await loadMaterials();
-
-    } else {
-
-      showLogin();
-
-    }
-
-  } catch (error) {
-
-    showLogin();
-
-    loginMessage.textContent =
-      "Server से connection नहीं हो रहा।";
-
+    cb(null, safeName);
   }
-}
+});
 
-
-/* =========================
-   SHOW LOGIN
-========================= */
-
-function showLogin() {
-
-  loginSection.style.display = "block";
-
-  dashboard.style.display = "none";
-
-}
-
-
-/* =========================
-   SHOW DASHBOARD
-========================= */
-
-function showDashboard() {
-
-  loginSection.style.display = "none";
-
-  dashboard.style.display = "block";
-
-}
-
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: maxMB * 1024 * 1024
+  }
+});
 
 /* =========================
    LOGIN
 ========================= */
 
-async function login() {
-
-  const email =
-    emailInput.value.trim().toLowerCase();
-
-  const password =
-    passwordInput.value;
-
-
-  if (!email || !password) {
-
-    loginMessage.textContent =
-      "Email और Password दोनों भरें।";
-
-    return;
-
-  }
-
-
-  loginButton.disabled = true;
-
-  loginButton.textContent =
-    "Logging in...";
-
-  loginMessage.textContent = "";
-
-
+app.post("/api/login", (req, res) => {
   try {
+    const email = String(req.body.email || "")
+      .trim()
+      .toLowerCase();
 
-    const { response, data } =
-      await apiFetch(
-        "/api/login",
-        {
-          method: "POST",
+    const password = String(req.body.password || "");
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            email: email,
-            password: password
-          })
-        }
-      );
-
-
-    if (
-      response.ok &&
-      data.ok === true
-    ) {
-
-      emailInput.value = "";
-      passwordInput.value = "";
-
-      loginMessage.textContent =
-        "Login successful ✓";
-
-      showDashboard();
-
-      await loadMaterials();
-
-    } else {
-
-      loginMessage.textContent =
-        data.error ||
-        "Login failed.";
-
+    if (!email || !password) {
+      return res.status(400).json({
+        error: "Email और Password दोनों भरें"
+      });
     }
 
-  } catch (error) {
+    const user = db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email);
 
-    loginMessage.textContent =
-      "Server से connection नहीं हो रहा।";
+    if (!user) {
+      return res.status(401).json({
+        error: "Email या Password गलत है"
+      });
+    }
 
-    console.error(error);
+    const valid = bcrypt.compareSync(
+      password,
+      user.password_hash
+    );
 
-  } finally {
+    if (!valid) {
+      return res.status(401).json({
+        error: "Email या Password गलत है"
+      });
+    }
 
-    loginButton.disabled = false;
+    req.session.userId = user.id;
+    req.session.userEmail = user.email;
 
-    loginButton.textContent =
-      "Login";
+    return res.json({
+      ok: true
+    });
 
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+
+    return res.status(500).json({
+      error: "Server login error"
+    });
   }
-
-}
-
+});
 
 /* =========================
    LOGOUT
 ========================= */
 
-async function logout() {
+app.post("/api/logout", (req, res) => {
+  req.session = null;
 
+  res.json({
+    ok: true
+  });
+});
+
+/* =========================
+   CURRENT USER
+========================= */
+
+app.get("/api/me", (req, res) => {
+  res.json({
+    loggedIn: !!(req.session && req.session.userId),
+    email: req.session?.userEmail || null
+  });
+});
+
+/* =========================
+   GET MATERIALS
+========================= */
+
+app.get("/api/materials", (req, res) => {
   try {
+    const className = String(req.query.className || "").trim();
+    const subject = String(req.query.subject || "").trim();
+    const q = String(req.query.q || "").trim();
 
-    await apiFetch(
-      "/api/logout",
-      {
-        method: "POST"
+    let sql = "SELECT * FROM materials WHERE 1=1";
+    const args = [];
+
+    if (className) {
+      sql += " AND class_name = ?";
+      args.push(className);
+    }
+
+    if (subject) {
+      sql += " AND subject = ?";
+      args.push(subject);
+    }
+
+    if (q) {
+      sql += `
+        AND (
+          title LIKE ?
+          OR chapter LIKE ?
+          OR description LIKE ?
+        )
+      `;
+
+      const search = `%${q}%`;
+
+      args.push(search, search, search);
+    }
+
+    sql += " ORDER BY id DESC";
+
+    const rows = db.prepare(sql).all(...args);
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error("MATERIAL LIST ERROR:", err);
+
+    res.status(500).json({
+      error: "Materials load failed"
+    });
+  }
+});
+
+/* =========================
+   UPLOAD MATERIAL
+========================= */
+
+app.post(
+  "/api/materials",
+  auth,
+  upload.single("file"),
+  (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          error: "File is required"
+        });
       }
-    );
 
-  } catch (error) {
+      const body = req.body;
 
-    console.error(error);
-
-  }
-
-  showLogin();
-
-}
-
-
-/* =========================
-   UPLOAD
-========================= */
-
-async function uploadMaterial(event) {
-
-  event.preventDefault();
-
-  uploadMessage.textContent =
-    "Uploading...";
-
-
-  const formData =
-    new FormData(materialForm);
-
-
-  try {
-
-    const { response, data } =
-      await apiFetch(
-        "/api/materials",
-        {
-          method: "POST",
-          body: formData
-        }
+      const result = db.prepare(`
+        INSERT INTO materials
+        (
+          title,
+          class_name,
+          subject,
+          chapter,
+          description,
+          type,
+          filename,
+          stored_name,
+          mime,
+          size
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        body.title || "Untitled",
+        body.className || "All Classes",
+        body.subject || "Other",
+        body.chapter || "",
+        body.description || "",
+        body.type || "Other",
+        req.file.originalname,
+        req.file.filename,
+        req.file.mimetype,
+        req.file.size
       );
 
+      res.json({
+        ok: true,
+        id: result.lastInsertRowid
+      });
 
-    if (response.ok && data.ok) {
+    } catch (err) {
+      console.error("UPLOAD ERROR:", err);
 
-      uploadMessage.textContent =
-        "Uploaded ✓";
-
-      materialForm.reset();
-
-      await loadMaterials();
-
-    } else {
-
-      uploadMessage.textContent =
-        data.error ||
-        "Upload failed.";
-
+      res.status(500).json({
+        error: "Upload failed"
+      });
     }
-
-  } catch (error) {
-
-    console.error(error);
-
-    uploadMessage.textContent =
-      "Upload के दौरान error आया।";
-
   }
-
-}
-
+);
 
 /* =========================
-   LOAD MATERIALS
+   DELETE MATERIAL
 ========================= */
 
-async function loadMaterials() {
-
-  items.innerHTML =
-    "<p>Loading materials...</p>";
-
-
-  try {
-
-    const { response, data } =
-      await apiFetch(
-        "/api/materials"
-      );
-
-
-    if (!response.ok) {
-
-      items.innerHTML =
-        "<p>Materials load नहीं हो पाए।</p>";
-
-      return;
-
-    }
-
-
-    if (
-      !Array.isArray(data) ||
-      data.length === 0
-    ) {
-
-      items.innerHTML =
-        "<p>No materials yet.</p>";
-
-      return;
-
-    }
-
-
-    items.innerHTML =
-      data
-        .map(material => {
-
-          const title =
-            escapeHtml(
-              material.title
-            );
-
-          const subject =
-            escapeHtml(
-              material.subject || ""
-            );
-
-          const className =
-            escapeHtml(
-              material.class_name || ""
-            );
-
-          const type =
-            escapeHtml(
-              material.type || ""
-            );
-
-          const storedName =
-            encodeURIComponent(
-              material.stored_name || ""
-            );
-
-
-          return `
-            <div class="item glass">
-
-              <b>${title}</b>
-
-              <span>
-                ${subject}
-                • Class ${className}
-                • ${type}
-              </span>
-
-              <a
-                href="/uploads/${storedName}"
-                target="_blank"
-                rel="noopener"
-              >
-                Open
-              </a>
-
-              <button
-                type="button"
-                onclick="deleteMaterial(${material.id})"
-              >
-                Delete
-              </button>
-
-            </div>
-          `;
-
-        })
-        .join("");
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    items.innerHTML =
-      "<p>Server से materials load नहीं हुए।</p>";
-
-  }
-
-}
-
-
-/* =========================
-   DELETE
-========================= */
-
-async function deleteMaterial(id) {
-
-  const confirmed =
-    confirm(
-      "Delete this material?"
-    );
-
-
-  if (!confirmed) {
-    return;
-  }
-
-
-  try {
-
-    const { response, data } =
-      await apiFetch(
-        "/api/materials/" + id,
-        {
-          method: "DELETE"
-        }
-      );
-
-
-    if (response.ok && data.ok) {
-
-      await loadMaterials();
-
-    } else {
-
-      alert(
-        data.error ||
-        "Delete failed."
-      );
-
-    }
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      "Delete करते समय server error आया।"
-    );
-
-  }
-
-}
-
-
-/* =========================
-   HTML ESCAPE
-========================= */
-
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replace(
-      /[&<>"']/g,
-      function(match) {
-
-        const map = {
-
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;"
-
-        };
-
-        return map[match];
-
+app.delete(
+  "/api/materials/:id",
+  auth,
+  (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      const material = db
+        .prepare("SELECT * FROM materials WHERE id = ?")
+        .get(id);
+
+      if (!material) {
+        return res.status(404).json({
+          error: "Material not found"
+        });
       }
-    );
 
-}
+      if (material.stored_name) {
+        const filePath = path.join(
+          UPLOADS,
+          material.stored_name
+        );
 
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
 
-/* =========================
-   EVENTS
-========================= */
+      db.prepare(
+        "DELETE FROM materials WHERE id = ?"
+      ).run(id);
 
-loginButton.addEventListener(
-  "click",
-  login
-);
+      res.json({
+        ok: true
+      });
 
-logoutButton.addEventListener(
-  "click",
-  logout
-);
+    } catch (err) {
+      console.error("DELETE ERROR:", err);
 
-materialForm.addEventListener(
-  "submit",
-  uploadMaterial
-);
-
-
-/*
-  Allow Enter key to login.
-*/
-
-passwordInput.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (event.key === "Enter") {
-
-      event.preventDefault();
-
-      login();
-
+      res.status(500).json({
+        error: "Delete failed"
+      });
     }
-
   }
 );
 
-
 /* =========================
-   START
+   ADMIN PAGE
 ========================= */
 
-checkLogin();
+app.get("/admin", (req, res) => {
+  res.sendFile(
+    path.join(PUBLIC, "admin.html")
+  );
+});
 
-</script>
+/* =========================
+   MAIN WEBSITE
+========================= */
 
-</body>
-</html>
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(PUBLIC, "index.html")
+  );
+});
+
+/* =========================
+   START SERVER
+========================= */
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(
+    `Sir Mahee server running on port ${PORT}`
+  );
+});
