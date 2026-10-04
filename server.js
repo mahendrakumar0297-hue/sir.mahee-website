@@ -51,4 +51,6 @@ app.delete("/api/materials/:id",auth,(req,res)=>{
  db.prepare("DELETE FROM materials WHERE id=?").run(req.params.id);res.json({ok:true});
 });
 app.get("*",(req,res)=>res.sendFile(path.join(ROOT,"public","index.html")));
-app.listen(PORT,()=>console.log(`Sir Mahee Hub running on http://localhost:${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Sir Mahee server running on port ${PORT}`);
+});
