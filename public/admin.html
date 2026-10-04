@@ -1,306 +1,692 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<title>Sir Mahee Admin</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
+<link rel="stylesheet" href="/style.css">
 
-  <title>Sir Mahee Admin</title>
+<style>
+:root{
+  --bg:#06111d;
+  --text:#eef6ff;
+  --muted:#a9b8ca;
+  --line:rgba(255,255,255,.18);
+  --success:#71e6a8;
+  --danger:#ff7373;
+}
 
-  <link
-    rel="stylesheet"
-    href="/style.css"
-  >
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+}
+
+body{
+  background:
+    radial-gradient(circle at 12% 12%,rgba(0,255,170,.22),transparent 30%),
+    radial-gradient(circle at 88% 8%,rgba(65,125,255,.27),transparent 32%),
+    radial-gradient(circle at 50% 90%,rgba(120,70,255,.18),transparent 35%),
+    var(--bg);
+  background-attachment:fixed;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(
+    135deg,
+    rgba(255,255,255,.05),
+    transparent 35%,
+    rgba(255,255,255,.025)
+  );
+}
+
+/* NAVBAR */
+
+nav{
+  position:sticky;
+  top:0;
+  z-index:10;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:15px 22px;
+
+  background:rgba(5,15,28,.55);
+  border-bottom:1px solid var(--line);
+
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+}
+
+nav b{
+  font-size:15px;
+}
+
+nav a{
+  color:#d8e9fb;
+  text-decoration:none;
+  font-size:14px;
+}
+
+/* MAIN */
+
+.admin{
+  max-width:1100px;
+  margin:0 auto;
+  padding:42px 18px 70px;
+}
+
+/* LIQUID GLASS */
+
+.glass{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.13),
+      rgba(255,255,255,.055)
+    );
+
+  border:1px solid var(--line);
+
+  box-shadow:
+    0 20px 55px rgba(0,0,0,.20),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
+  backdrop-filter:blur(24px) saturate(145%);
+  -webkit-backdrop-filter:blur(24px) saturate(145%);
+}
+
+.panel{
+  border-radius:24px;
+  padding:26px;
+}
+
+#login{
+  max-width:540px;
+  margin:7vh auto;
+}
+
+/* TEXT */
+
+h1{
+  margin:0 0 18px;
+  font-size:28px;
+}
+
+h2{
+  margin:0 0 18px;
+  font-size:20px;
+}
+
+p{
+  color:var(--muted);
+}
+
+/* INPUTS */
+
+input,
+select,
+textarea{
+  width:100%;
+
+  margin-top:8px;
+  padding:13px 14px;
+
+  border-radius:13px;
+
+  color:var(--text);
+  background:rgba(0,0,0,.18);
+
+  border:1px solid rgba(255,255,255,.16);
+
+  outline:none;
+
+  font:inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:rgba(118,199,255,.75);
+
+  box-shadow:
+    0 0 0 3px rgba(118,199,255,.12);
+}
+
+textarea{
+  min-height:105px;
+  resize:vertical;
+}
+
+label{
+  display:block;
+  color:#dce9f6;
+  font-size:14px;
+  margin-bottom:15px;
+}
+
+/* BUTTONS */
+
+button{
+  border:0;
+  border-radius:12px;
+
+  padding:11px 18px;
+
+  color:#06111d;
+  background:#dff3ff;
+
+  font-weight:700;
+  cursor:pointer;
+
+  transition:
+    .18s transform,
+    .18s opacity;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  opacity:.92;
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.btn{
+  background:rgba(255,255,255,.14);
+  color:#eef7ff;
+
+  border:1px solid var(--line);
+}
+
+.danger{
+  background:rgba(255,75,75,.16);
+  color:#ffd9d9;
+
+  border:1px solid rgba(255,100,100,.28);
+}
+
+/* LAYOUT */
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px 18px;
+}
+
+.status{
+  min-height:22px;
+  margin:12px 0 0;
+  font-size:14px;
+}
+
+.ok{
+  color:var(--success);
+}
+
+.err{
+  color:#ffaaa9;
+}
+
+.hidden{
+  display:none!important;
+}
+
+/* MATERIALS */
+
+.items{
+  display:grid;
+  gap:12px;
+}
+
+.item{
+  display:grid;
+
+  grid-template-columns:1fr auto;
+
+  gap:8px 14px;
+
+  padding:17px;
+
+  border-radius:17px;
+}
+
+.item .meta{
+  color:var(--muted);
+  font-size:13px;
+
+  grid-column:1/2;
+}
+
+.item .actions{
+  grid-column:2;
+  grid-row:1/3;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:25px;
+}
+
+.loading{
+  opacity:.7;
+}
+
+.badge{
+  display:inline-block;
+
+  padding:5px 9px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.09);
+
+  border:1px solid var(--line);
+
+  font-size:12px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .two{
+    grid-template-columns:1fr;
+  }
+
+  .panel{
+    padding:19px;
+    border-radius:20px;
+  }
+
+  .admin{
+    padding:25px 12px 50px;
+  }
+
+  .row{
+    align-items:flex-start;
+  }
+
+  .item{
+    grid-template-columns:1fr;
+  }
+
+  .item .actions{
+    grid-column:1;
+    grid-row:auto;
+  }
+
+  h1{
+    font-size:24px;
+  }
+}
+</style>
 </head>
+
 
 <body>
 
-  <nav>
-    <b>🔐 Sir Mahee Admin</b>
+<nav>
 
-    <a href="/">
-      Student Website
-    </a>
-  </nav>
+  <b>🔐 Sir Mahee Admin</b>
 
-  <main class="admin">
+  <a href="/">
+    Student Website ↗
+  </a>
 
-    <!-- ================= LOGIN ================= -->
+</nav>
 
-    <section
-      id="loginSection"
-      class="glass panel"
-    >
 
-      <h1>Admin Login</h1>
+<main class="admin">
+
+<!-- ================= LOGIN ================= -->
+
+<section id="login" class="glass panel">
+
+  <h1>
+    Admin Login
+  </h1>
+
+  <p>
+    Sign in to manage Sir Mahee study materials.
+  </p>
+
+
+  <form id="loginForm" autocomplete="on">
+
+    <label>
+      Email
 
       <input
         id="email"
+        name="email"
         type="email"
-        placeholder="Email"
         autocomplete="username"
+        placeholder="Admin email"
+        required
       >
+
+    </label>
+
+
+    <label>
+      Password
 
       <input
         id="password"
+        name="password"
         type="password"
-        placeholder="Password"
         autocomplete="current-password"
+        placeholder="Admin password"
+        required
       >
 
-      <button
-        id="loginButton"
-        type="button"
-      >
-        Login
-      </button>
-
-      <p id="loginMessage"></p>
-
-    </section>
+    </label>
 
 
-    <!-- ================= DASHBOARD ================= -->
-
-    <section
-      id="dashboard"
-      style="display:none"
+    <button
+      id="loginBtn"
+      type="submit"
     >
-
-      <div class="glass panel">
-
-        <div class="row">
-
-          <div>
-            <h1>📤 Content Manager</h1>
-
-            <p>
-              Upload and manage your study material.
-            </p>
-          </div>
-
-          <button
-            id="logoutButton"
-            class="btn"
-            type="button"
-          >
-            Logout
-          </button>
-
-        </div>
+      Login
+    </button>
 
 
-        <!-- ================= UPLOAD FORM ================= -->
+    <div
+      id="loginMsg"
+      class="status"
+    ></div>
 
-        <form
-          id="materialForm"
-          enctype="multipart/form-data"
+  </form>
+
+</section>
+
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section
+  id="dash"
+  class="hidden"
+>
+
+
+<!-- CONTENT MANAGER -->
+
+<div class="glass panel">
+
+  <div class="row">
+
+    <div>
+
+      <h1>
+        📤 Content Manager
+      </h1>
+
+      <p>
+        Upload and manage your study material.
+      </p>
+
+    </div>
+
+
+    <button
+      class="btn"
+      id="logoutBtn"
+      type="button"
+    >
+      Logout
+    </button>
+
+  </div>
+
+
+
+  <!-- UPLOAD FORM -->
+
+  <form
+    id="materialForm"
+    enctype="multipart/form-data"
+  >
+
+    <div class="two">
+
+
+      <label>
+        Title
+
+        <input
+          name="title"
+          required
+          placeholder="Tenses — Complete Notes"
         >
 
-          <div class="two">
-
-            <label>
-              Title
-
-              <input
-                name="title"
-                required
-                placeholder="Tenses — Complete Notes"
-              >
-            </label>
+      </label>
 
 
-            <label>
-              Class
 
-              <select name="className">
+      <label>
+        Class
 
-                <option>All Classes</option>
+        <select name="className">
 
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
+          <option>
+            All Classes
+          </option>
 
-              </select>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+          <option>9</option>
+          <option>10</option>
 
-            </label>
+        </select>
 
-
-            <label>
-              Subject
-
-              <select name="subject">
-
-                <option>English</option>
-                <option>Hindi</option>
-                <option>Maths</option>
-                <option>Science</option>
-                <option>Social Science</option>
-                <option>Rajasthan GK</option>
-                <option>Competitive Exams</option>
-                <option>Other</option>
-
-              </select>
-
-            </label>
+      </label>
 
 
-            <label>
-              Type
 
-              <select name="type">
+      <label>
+        Subject
 
-                <option>Notes</option>
-                <option>PDF</option>
-                <option>Worksheet</option>
-                <option>Question Paper</option>
-                <option>Video</option>
-                <option>Audio</option>
-                <option>Image</option>
-                <option>Other</option>
+        <select name="subject">
 
-              </select>
+          <option>English</option>
+          <option>Hindi</option>
+          <option>Maths</option>
+          <option>Science</option>
+          <option>Social Science</option>
+          <option>Rajasthan GK</option>
+          <option>Competitive Exams</option>
+          <option>Other</option>
 
-            </label>
+        </select>
 
-
-            <label>
-              Chapter
-
-              <input
-                name="chapter"
-                placeholder="Grammar / Tenses"
-              >
-
-            </label>
+      </label>
 
 
-            <label>
-              Description
 
-              <textarea
-                name="description"
-                placeholder="Short description"
-              ></textarea>
+      <label>
+        Type
 
-            </label>
+        <select name="type">
 
-          </div>
+          <option>Notes</option>
+          <option>PDF</option>
+          <option>Worksheet</option>
+          <option>Question Paper</option>
+          <option>Video</option>
+          <option>Audio</option>
+          <option>Image</option>
+          <option>Other</option>
 
+        </select>
 
-          <label>
-            File
-
-            <input
-              name="file"
-              type="file"
-              required
-            >
-          </label>
+      </label>
 
 
-          <button
-            class="btn"
-            type="submit"
-          >
-            Upload Material
-          </button>
 
-          <p id="uploadMessage"></p>
+      <label>
+        Chapter
 
-        </form>
+        <input
+          name="chapter"
+          placeholder="Grammar / Tenses"
+        >
 
-      </div>
+      </label>
 
 
-      <!-- ================= MATERIALS ================= -->
 
-      <div class="glass panel">
+      <label>
+        Description
 
-        <h2>
-          📚 Uploaded Materials
-        </h2>
+        <textarea
+          name="description"
+          placeholder="Short description"
+        ></textarea>
 
-        <div id="items">
-          Loading...
-        </div>
+      </label>
 
-      </div>
 
-    </section>
+    </div>
 
-  </main>
+
+    <label>
+
+      File
+
+      <input
+        name="file"
+        type="file"
+        required
+      >
+
+    </label>
+
+
+    <button
+      id="uploadBtn"
+      type="submit"
+    >
+      ⬆️ Upload Material
+    </button>
+
+
+    <div
+      id="upmsg"
+      class="status"
+    ></div>
+
+  </form>
+
+</div>
+
+
+
+<!-- UPLOADED MATERIALS -->
+
+<div
+  class="glass panel"
+  style="margin-top:18px"
+>
+
+  <div class="row">
+
+    <h2>
+      📚 Uploaded Materials
+    </h2>
+
+    <span
+      id="count"
+      class="badge"
+    >
+      0
+    </span>
+
+  </div>
+
+
+  <div
+    id="items"
+    class="items"
+  >
+
+    <div class="empty">
+      Loading...
+    </div>
+
+  </div>
+
+</div>
+
+
+</section>
+
+</main>
+
 
 
 <script>
 
-"use strict";
+/* =========================================
+   BASIC HELPER
+========================================= */
+
+const $ = id => document.getElementById(id);
 
 
-/* =========================
-   ELEMENTS
-========================= */
 
-const loginSection =
-  document.getElementById("loginSection");
+/* =========================================
+   FETCH HELPER
+========================================= */
 
-const dashboard =
-  document.getElementById("dashboard");
-
-const emailInput =
-  document.getElementById("email");
-
-const passwordInput =
-  document.getElementById("password");
-
-const loginButton =
-  document.getElementById("loginButton");
-
-const logoutButton =
-  document.getElementById("logoutButton");
-
-const loginMessage =
-  document.getElementById("loginMessage");
-
-const materialForm =
-  document.getElementById("materialForm");
-
-const uploadMessage =
-  document.getElementById("uploadMessage");
-
-const items =
-  document.getElementById("items");
-
-
-/* =========================
-   API HELPER
-========================= */
-
-async function apiFetch(url, options = {}) {
+async function jsonFetch(url, options = {}) {
 
   const response = await fetch(
     url,
     {
-      ...options,
-
-      credentials: "include"
+      credentials:"same-origin",
+      ...options
     }
   );
 
   let data = {};
 
-  try {
+  try{
+
     data = await response.json();
-  } catch (error) {
-    data = {};
-  }
+
+  }catch(_){}
 
   return {
     response,
@@ -309,409 +695,543 @@ async function apiFetch(url, options = {}) {
 }
 
 
-/* =========================
-   CHECK LOGIN
-========================= */
 
-async function checkLogin() {
+/* =========================================
+   SESSION CHECK
+========================================= */
 
-  try {
+async function checkSession(){
 
-    const { response, data } =
-      await apiFetch("/api/me");
+  try{
 
-    if (
+    const {
+      response,
+      data
+    } = await jsonFetch("/api/me");
+
+
+    if(
       response.ok &&
-      data.loggedIn === true
-    ) {
+      data.loggedIn
+    ){
 
       showDashboard();
 
       await loadMaterials();
 
-    } else {
+    }else{
 
       showLogin();
 
     }
 
-  } catch (error) {
+  }catch(err){
 
     showLogin();
 
-    loginMessage.textContent =
+    $("loginMsg").textContent =
       "Server से connection नहीं हो रहा।";
 
+    $("loginMsg").className =
+      "status err";
+
   }
+
 }
 
 
-/* =========================
+
+/* =========================================
    SHOW LOGIN
-========================= */
+========================================= */
 
-function showLogin() {
+function showLogin(){
 
-  loginSection.style.display = "block";
+  $("login")
+    .classList
+    .remove("hidden");
 
-  dashboard.style.display = "none";
+  $("dash")
+    .classList
+    .add("hidden");
 
 }
 
 
-/* =========================
+
+/* =========================================
    SHOW DASHBOARD
-========================= */
+========================================= */
 
-function showDashboard() {
+function showDashboard(){
 
-  loginSection.style.display = "none";
+  $("login")
+    .classList
+    .add("hidden");
 
-  dashboard.style.display = "block";
+  $("dash")
+    .classList
+    .remove("hidden");
 
 }
 
 
-/* =========================
+
+/* =========================================
    LOGIN
-========================= */
+========================================= */
 
-async function login() {
+$("loginForm").addEventListener(
+  "submit",
+  async e => {
 
-  const email =
-    emailInput.value.trim().toLowerCase();
-
-  const password =
-    passwordInput.value;
+    e.preventDefault();
 
 
-  if (!email || !password) {
+    const email =
+      $("email").value.trim();
 
-    loginMessage.textContent =
-      "Email और Password दोनों भरें।";
-
-    return;
-
-  }
+    const password =
+      $("password").value;
 
 
-  loginButton.disabled = true;
+    const btn =
+      $("loginBtn");
 
-  loginButton.textContent =
-    "Logging in...";
-
-  loginMessage.textContent = "";
+    const msg =
+      $("loginMsg");
 
 
-  try {
+    msg.textContent = "";
 
-    const { response, data } =
-      await apiFetch(
+
+    if(
+      !email ||
+      !password
+    ){
+
+      msg.textContent =
+        "Email और Password दोनों भरें।";
+
+      msg.className =
+        "status err";
+
+      return;
+
+    }
+
+
+    btn.disabled = true;
+
+    btn.textContent =
+      "Logging in...";
+
+
+    try{
+
+      const {
+        response,
+        data
+      } = await jsonFetch(
         "/api/login",
         {
-          method: "POST",
 
-          headers: {
+          method:"POST",
+
+          headers:{
             "Content-Type":
               "application/json"
           },
 
-          body: JSON.stringify({
-            email: email,
-            password: password
-          })
+          body:
+            JSON.stringify({
+              email,
+              password
+            })
+
         }
       );
 
 
-    if (
-      response.ok &&
-      data.ok === true
-    ) {
+      if(
+        response.ok &&
+        data.ok
+      ){
 
-      emailInput.value = "";
-      passwordInput.value = "";
+        msg.textContent =
+          "Login successful ✓";
 
-      loginMessage.textContent =
-        "Login successful ✓";
+        msg.className =
+          "status ok";
 
-      showDashboard();
 
-      await loadMaterials();
+        showDashboard();
 
-    } else {
+        await loadMaterials();
 
-      loginMessage.textContent =
-        data.error ||
-        "Login failed.";
+      }else{
+
+        msg.textContent =
+          data.error ||
+          "Invalid email or password.";
+
+        msg.className =
+          "status err";
+
+      }
+
+
+    }catch(err){
+
+      msg.textContent =
+        "Server connection failed: " +
+        err.message;
+
+      msg.className =
+        "status err";
+
+    }finally{
+
+      btn.disabled = false;
+
+      btn.textContent =
+        "Login";
 
     }
 
-  } catch (error) {
-
-    loginMessage.textContent =
-      "Server से connection नहीं हो रहा।";
-
-    console.error(error);
-
-  } finally {
-
-    loginButton.disabled = false;
-
-    loginButton.textContent =
-      "Login";
-
   }
+);
 
-}
 
 
-/* =========================
+/* =========================================
    LOGOUT
-========================= */
+========================================= */
 
-async function logout() {
+$("logoutBtn").addEventListener(
+  "click",
+  async () => {
 
-  try {
+    try{
 
-    await apiFetch(
-      "/api/logout",
-      {
-        method: "POST"
-      }
-    );
+      await jsonFetch(
+        "/api/logout",
+        {
+          method:"POST"
+        }
+      );
 
-  } catch (error) {
+    }finally{
 
-    console.error(error);
+      showLogin();
+
+      $("password").value = "";
+
+    }
 
   }
-
-  showLogin();
-
-}
+);
 
 
-/* =========================
-   UPLOAD
-========================= */
 
-async function uploadMaterial(event) {
+/* =========================================
+   UPLOAD MATERIAL
+========================================= */
 
-  event.preventDefault();
+$("materialForm").addEventListener(
+  "submit",
+  async e => {
 
-  uploadMessage.textContent =
-    "Uploading...";
-
-
-  const formData =
-    new FormData(materialForm);
+    e.preventDefault();
 
 
-  try {
+    const btn =
+      $("uploadBtn");
 
-    const { response, data } =
-      await apiFetch(
+    const msg =
+      $("upmsg");
+
+
+    btn.disabled = true;
+
+    btn.textContent =
+      "Uploading...";
+
+    msg.textContent = "";
+
+
+    try{
+
+      const {
+        response,
+        data
+      } = await jsonFetch(
         "/api/materials",
         {
-          method: "POST",
-          body: formData
+
+          method:"POST",
+
+          body:
+            new FormData(
+              $("materialForm")
+            )
+
         }
       );
 
 
-    if (response.ok && data.ok) {
+      if(response.ok){
 
-      uploadMessage.textContent =
-        "Uploaded ✓";
+        msg.textContent =
+          "Material uploaded successfully ✓";
 
-      materialForm.reset();
+        msg.className =
+          "status ok";
 
-      await loadMaterials();
 
-    } else {
+        $("materialForm").reset();
 
-      uploadMessage.textContent =
-        data.error ||
-        "Upload failed.";
+        await loadMaterials();
+
+      }else{
+
+        msg.textContent =
+          data.error ||
+          "Upload failed.";
+
+        msg.className =
+          "status err";
+
+      }
+
+
+    }catch(err){
+
+      msg.textContent =
+        "Upload error: " +
+        err.message;
+
+      msg.className =
+        "status err";
+
+    }finally{
+
+      btn.disabled = false;
+
+      btn.textContent =
+        "⬆️ Upload Material";
 
     }
-
-  } catch (error) {
-
-    console.error(error);
-
-    uploadMessage.textContent =
-      "Upload के दौरान error आया।";
 
   }
+);
 
-}
 
 
-/* =========================
+/* =========================================
    LOAD MATERIALS
-========================= */
+========================================= */
 
-async function loadMaterials() {
+async function loadMaterials(){
 
-  items.innerHTML =
-    "<p>Loading materials...</p>";
+  const box =
+    $("items");
 
 
-  try {
+  box.classList.add(
+    "loading"
+  );
 
-    const { response, data } =
-      await apiFetch(
-        "/api/materials"
+
+  try{
+
+    const {
+      response,
+      data
+    } = await jsonFetch(
+      "/api/materials"
+    );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "Could not load materials"
       );
 
-
-    if (!response.ok) {
-
-      items.innerHTML =
-        "<p>Materials load नहीं हो पाए।</p>";
-
-      return;
-
     }
 
 
-    if (
+    $("count").textContent =
+      Array.isArray(data)
+        ? data.length
+        : 0;
+
+
+    if(
       !Array.isArray(data) ||
       data.length === 0
-    ) {
+    ){
 
-      items.innerHTML =
-        "<p>No materials yet.</p>";
+      box.innerHTML =
+        '<div class="empty">' +
+        'No materials yet.' +
+        '</div>';
 
       return;
 
     }
 
 
-    items.innerHTML =
-      data
-        .map(material => {
+    box.innerHTML =
+      data.map(x => {
 
-          const title =
-            escapeHtml(
-              material.title
-            );
+        const title =
+          esc(x.title);
 
-          const subject =
-            escapeHtml(
-              material.subject || ""
-            );
+        const subject =
+          esc(x.subject);
 
-          const className =
-            escapeHtml(
-              material.class_name || ""
-            );
+        const cls =
+          esc(x.class_name);
 
-          const type =
-            escapeHtml(
-              material.type || ""
-            );
+        const type =
+          esc(x.type);
 
-          const storedName =
-            encodeURIComponent(
-              material.stored_name || ""
-            );
+        const id =
+          Number(x.id);
+
+        const file =
+          encodeURIComponent(
+            x.stored_name || ""
+          );
 
 
-          return `
-            <div class="item glass">
+        return `
 
-              <b>${title}</b>
+          <div class="item glass">
 
-              <span>
-                ${subject}
-                • Class ${className}
-                • ${type}
-              </span>
+            <div>
+              <b>
+                ${title}
+              </b>
+            </div>
+
+
+            <div class="meta">
+              ${subject}
+              • Class ${cls}
+              • ${type}
+            </div>
+
+
+            <div class="actions">
 
               <a
-                href="/uploads/${storedName}"
+                class="btn"
+                style="
+                  padding:9px 12px;
+                  border-radius:10px;
+                  text-decoration:none;
+                  color:inherit
+                "
+                href="/uploads/${file}"
                 target="_blank"
                 rel="noopener"
               >
                 Open
               </a>
 
+
               <button
+                class="danger"
                 type="button"
-                onclick="deleteMaterial(${material.id})"
+                onclick="deleteMaterial(${id})"
               >
                 Delete
               </button>
 
             </div>
-          `;
 
-        })
-        .join("");
+          </div>
+
+        `;
+
+      }).join("");
 
 
-  } catch (error) {
+  }catch(err){
 
-    console.error(error);
+    box.innerHTML =
+      '<div class="empty">' +
+      'Materials load नहीं हो सके: ' +
+      esc(err.message) +
+      '</div>';
 
-    items.innerHTML =
-      "<p>Server से materials load नहीं हुए।</p>";
+  }finally{
+
+    box.classList.remove(
+      "loading"
+    );
 
   }
 
 }
 
 
-/* =========================
-   DELETE
-========================= */
 
-async function deleteMaterial(id) {
+/* =========================================
+   DELETE MATERIAL
+========================================= */
 
-  const confirmed =
-    confirm(
-      "Delete this material?"
-    );
+async function deleteMaterial(id){
 
+  if(
+    !confirm(
+      "क्या आप यह material delete करना चाहते हैं?"
+    )
+  ){
 
-  if (!confirmed) {
     return;
+
   }
 
 
-  try {
+  try{
 
-    const { response, data } =
-      await apiFetch(
-        "/api/materials/" + id,
-        {
-          method: "DELETE"
-        }
-      );
+    const {
+      response,
+      data
+    } = await jsonFetch(
+      "/api/materials/" +
+      encodeURIComponent(id),
+      {
+        method:"DELETE"
+      }
+    );
 
 
-    if (response.ok && data.ok) {
-
-      await loadMaterials();
-
-    } else {
+    if(!response.ok){
 
       alert(
         data.error ||
         "Delete failed."
       );
 
+      return;
+
     }
 
-  } catch (error) {
 
-    console.error(error);
+    await loadMaterials();
+
+
+  }catch(err){
 
     alert(
-      "Delete करते समय server error आया।"
+      "Delete error: " +
+      err.message
     );
 
   }
@@ -719,80 +1239,37 @@ async function deleteMaterial(id) {
 }
 
 
-/* =========================
+
+/* =========================================
    HTML ESCAPE
-========================= */
+========================================= */
 
-function escapeHtml(value) {
+function esc(value){
 
-  return String(value ?? "")
-    .replace(
-      /[&<>"']/g,
-      function(match) {
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    m => ({
 
-        const map = {
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      "\"":"&quot;",
+      "'":"&#39;"
 
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;"
-
-        };
-
-        return map[match];
-
-      }
-    );
+    }[m])
+  );
 
 }
 
 
-/* =========================
-   EVENTS
-========================= */
 
-loginButton.addEventListener(
-  "click",
-  login
-);
-
-logoutButton.addEventListener(
-  "click",
-  logout
-);
-
-materialForm.addEventListener(
-  "submit",
-  uploadMaterial
-);
-
-
-/*
-  Allow Enter key to login.
-*/
-
-passwordInput.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (event.key === "Enter") {
-
-      event.preventDefault();
-
-      login();
-
-    }
-
-  }
-);
-
-
-/* =========================
+/* =========================================
    START
-========================= */
+========================================= */
 
-checkLogin();
+checkSession();
 
 </script>
 
