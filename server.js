@@ -50,6 +50,9 @@ app.delete("/api/materials/:id",auth,(req,res)=>{
  try{fs.unlinkSync(path.join(UPLOADS,m.stored_name))}catch{}
  db.prepare("DELETE FROM materials WHERE id=?").run(req.params.id);res.json({ok:true});
 });
+app.get("/admin",(req,res)=>{
+  res.sendFile(path.join(ROOT,"public","admin.html"));
+});
 app.get("*",(req,res)=>res.sendFile(path.join(ROOT,"public","index.html")));
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Sir Mahee server running on port ${PORT}`);
