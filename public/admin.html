@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#06111f">
+
 <title>Sir Mahee Admin Dashboard</title>
+
 <style>
 :root{
   --bg:#06111f;
   --panel:rgba(255,255,255,.075);
-  --panel2:rgba(255,255,255,.105);
-  --line:rgba(255,255,255,.13);
+  --panel2:rgba(255,255,255,.12);
+  --line:rgba(255,255,255,.14);
   --text:#eef7ff;
   --muted:#9fb0c2;
   --accent:#55c7ff;
@@ -17,382 +20,2158 @@
   --danger:#ff6675;
   --success:#56d6a0;
 }
-*{box-sizing:border-box}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
 body{
-  margin:0;color:var(--text);
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  margin:0;
+  color:var(--text);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
   background:
-    radial-gradient(circle at 10% 5%,rgba(38,190,145,.22),transparent 28%),
-    radial-gradient(circle at 90% 10%,rgba(65,105,255,.25),transparent 30%),
-    radial-gradient(circle at 50% 100%,rgba(115,75,220,.14),transparent 35%),
+    radial-gradient(
+      circle at 10% 5%,
+      rgba(38,190,145,.22),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(65,105,255,.25),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(115,75,220,.14),
+      transparent 35%
+    ),
     var(--bg);
+
   min-height:100vh;
 }
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* ================= TOP BAR ================= */
+
 .topbar{
-  height:64px;padding:0 22px;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;z-index:10;
-  background:rgba(4,13,24,.62);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--line)
+  height:64px;
+  padding:0 22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  background:rgba(4,13,24,.68);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+
+  border-bottom:1px solid var(--line);
 }
-.brand{font-weight:800}.brand span{color:#66d2ff}
-.top-actions{display:flex;gap:10px;align-items:center}
-.top-actions a,.logout{
-  color:var(--text);text-decoration:none;border:1px solid var(--line);
-  background:var(--panel);padding:9px 13px;border-radius:12px
+
+.brand{
+  font-weight:800;
+  letter-spacing:.2px;
 }
-.layout{display:grid;grid-template-columns:235px 1fr;min-height:calc(100vh - 64px)}
+
+.brand span{
+  color:#66d2ff;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.top-actions a,
+.logout{
+  color:var(--text);
+  text-decoration:none;
+
+  border:1px solid var(--line);
+  background:var(--panel);
+
+  padding:9px 13px;
+  border-radius:12px;
+}
+
+.top-actions a:hover,
+.logout:hover{
+  background:var(--panel2);
+}
+
+/* ================= LAYOUT ================= */
+
+.layout{
+  display:grid;
+  grid-template-columns:235px 1fr;
+  min-height:calc(100vh - 64px);
+}
+
 .sidebar{
-  border-right:1px solid var(--line);padding:20px 14px;
-  background:rgba(0,0,0,.12);backdrop-filter:blur(18px)
+  border-right:1px solid var(--line);
+  padding:20px 14px;
+
+  background:rgba(0,0,0,.12);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
 }
-.profile{padding:14px;margin-bottom:18px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
-.avatar{font-size:30px}.profile small{color:var(--muted)}
+
+.profile{
+  padding:14px;
+  margin-bottom:18px;
+
+  border:1px solid var(--line);
+  border-radius:18px;
+
+  background:var(--panel);
+}
+
+.avatar{
+  font-size:30px;
+  margin-bottom:5px;
+}
+
+.profile small{
+  color:var(--muted);
+}
+
 .nav button{
-  width:100%;border:0;background:transparent;color:var(--muted);
-  text-align:left;padding:12px 14px;border-radius:13px;margin:3px 0
+  width:100%;
+
+  border:0;
+  background:transparent;
+
+  color:var(--muted);
+  text-align:left;
+
+  padding:12px 14px;
+  border-radius:13px;
+  margin:3px 0;
 }
-.nav button.active,.nav button:hover{background:var(--panel2);color:#fff}
-.content{padding:28px;max-width:1250px;width:100%;margin:auto}
-.page{display:none}.page.active{display:block}
-h1,h2,h3,p{margin-top:0}
-.muted{color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
-.card,.glass{
-  background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.045));
-  border:1px solid var(--line);border-radius:20px;
-  box-shadow:0 0 0 1px rgba(255,255,255,.02) inset;
-  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)
+
+.nav button.active,
+.nav button:hover{
+  background:var(--panel2);
+  color:#fff;
 }
-.card{padding:18px}.stat{font-size:27px;font-weight:800;margin:8px 0}
-.section{padding:20px;margin-top:18px}
-.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+
+.content{
+  padding:28px;
+  max-width:1250px;
+  width:100%;
+  margin:auto;
+}
+
+/* ================= PAGES ================= */
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+h1,
+h2,
+h3,
+p{
+  margin-top:0;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+/* ================= GLASS ================= */
+
+.card,
+.glass{
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.11),
+      rgba(255,255,255,.045)
+    );
+
+  border:1px solid var(--line);
+  border-radius:20px;
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.02) inset;
+
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+}
+
+.card{
+  padding:18px;
+}
+
+.section{
+  padding:20px;
+  margin-top:18px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.stat{
+  font-size:27px;
+  font-weight:800;
+  margin:8px 0;
+}
+
+/* ================= TOOLBAR ================= */
+
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* ================= BUTTONS ================= */
+
 .btn{
-  border:1px solid rgba(255,255,255,.18);color:#fff;
-  background:linear-gradient(135deg,rgba(83,201,255,.34),rgba(111,101,255,.34));
-  padding:10px 15px;border-radius:12px
+  border:1px solid rgba(255,255,255,.18);
+
+  color:#fff;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(83,201,255,.34),
+      rgba(111,101,255,.34)
+    );
+
+  padding:10px 15px;
+  border-radius:12px;
 }
-.btn.secondary{background:var(--panel)}
-.btn.danger{background:rgba(255,70,90,.2);border-color:rgba(255,90,110,.3)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-label{display:block;color:#c7d3df;font-size:13px}
-input,select,textarea{
-  width:100%;margin-top:7px;border:1px solid var(--line);
-  background:rgba(2,10,20,.42);color:#fff;border-radius:12px;
-  padding:11px 12px;outline:none
+
+.btn:hover{
+  filter:brightness(1.15);
 }
-textarea{min-height:105px;resize:vertical}
-input:focus,select:focus,textarea:focus{border-color:rgba(85,199,255,.6)}
-.full{grid-column:1/-1}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:#bcd0df;font-size:12px;text-transform:uppercase}
-.badge{padding:5px 9px;border-radius:99px;background:var(--panel2);font-size:12px}
-.item{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:15px;margin-top:10px;background:rgba(255,255,255,.045)}
-.item-info{min-width:0}.item-info b{display:block}.item-info small{color:var(--muted)}
-.actions{display:flex;gap:7px;flex-wrap:wrap}
-.empty{text-align:center;padding:30px;color:var(--muted)}
-.notice{padding:12px 14px;border-radius:13px;margin-top:12px;background:rgba(86,214,160,.1);border:1px solid rgba(86,214,160,.2)}
-footer{color:var(--muted);text-align:center;padding:30px}
+
+.btn.secondary{
+  background:var(--panel);
+}
+
+.btn.danger{
+  background:rgba(255,70,90,.2);
+  border-color:rgba(255,90,110,.3);
+}
+
+/* ================= FORMS ================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+label{
+  display:block;
+
+  color:#c7d3df;
+
+  font-size:13px;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+
+  margin-top:7px;
+
+  border:1px solid var(--line);
+
+  background:rgba(2,10,20,.42);
+
+  color:#fff;
+
+  border-radius:12px;
+
+  padding:11px 12px;
+
+  outline:none;
+}
+
+input::placeholder,
+textarea::placeholder{
+  color:#728496;
+}
+
+select option{
+  background:#102033;
+  color:#fff;
+}
+
+textarea{
+  min-height:105px;
+  resize:vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:rgba(85,199,255,.6);
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+/* ================= MATERIAL LIST ================= */
+
+.item{
+  display:flex;
+
+  justify-content:space-between;
+  align-items:center;
+
+  gap:15px;
+
+  padding:13px;
+
+  border:1px solid var(--line);
+  border-radius:15px;
+
+  margin-top:10px;
+
+  background:rgba(255,255,255,.045);
+}
+
+.item-info{
+  min-width:0;
+}
+
+.item-info b{
+  display:block;
+  margin-bottom:4px;
+}
+
+.item-info small{
+  color:var(--muted);
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.badge{
+  padding:5px 9px;
+  border-radius:99px;
+
+  background:var(--panel2);
+
+  font-size:12px;
+}
+
+.empty{
+  text-align:center;
+  padding:30px;
+  color:var(--muted);
+}
+
+.notice{
+  padding:12px 14px;
+
+  border-radius:13px;
+
+  margin-top:12px;
+
+  background:rgba(86,214,160,.1);
+
+  border:1px solid rgba(86,214,160,.2);
+}
+
+.error{
+  padding:12px 14px;
+
+  border-radius:13px;
+
+  margin-top:12px;
+
+  background:rgba(255,80,100,.1);
+
+  border:1px solid rgba(255,80,100,.2);
+}
+
+footer{
+  color:var(--muted);
+  text-align:center;
+  padding:30px;
+}
+
+/* ================= MOBILE ================= */
+
 @media(max-width:850px){
-  .layout{grid-template-columns:1fr}
-  .sidebar{position:sticky;top:64px;z-index:8;border-right:0;border-bottom:1px solid var(--line);padding:8px}
-  .profile{display:none}
-  .nav{display:flex;overflow:auto;gap:5px}
-  .nav button{white-space:nowrap;width:auto}
-  .content{padding:18px}
-  .grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:560px){
-  .form-grid{grid-template-columns:1fr}
-  .grid{grid-template-columns:1fr 1fr}
-  .topbar{padding:0 12px}
-  .top-actions a{display:none}
-}
-</style>
-</head>
-<body>
 
-<header class="topbar">
-  <div class="brand">🔐 <span>Sir Mahee</span> Admin</div>
-  <div class="top-actions">
-    <a href="/" target="_blank">Student Website ↗</a>
-    <button class="logout" onclick="logout()">Logout</button>
-  </div>
-</header>
+  .layout{
+    grid-template-columns:1fr;
+  }
 
-<div class="layout">
-<aside class="sidebar">
-  <div class="profile">
-    <div class="avatar">👨‍🏫</div>
-    <b>Sir Mahee</b><br><small>Teacher • Creator • Admin</small>
-  </div>
-  <nav class="nav">
-    <button class="active" data-page="dashboard">📊 Dashboard</button>
-    <button data-page="materials">📚 Study Materials</button>
-    <button data-page="quiz">🎯 Quiz & Practice</button>
-    <button data-page="social">🔗 Social Links</button>
-    <button data-page="announcements">📢 Announcements</button>
-    <button data-page="settings">⚙️ Settings</button>
-  </nav>
-</aside>
+  .sidebar{
+    position:sticky;
+    top:64px;
+    z-index:90;
 
-<main class="content">
+    border-right:0;
+    border-bottom:1px solid var(--line);
 
-<section id="dashboard" class="page active">
-  <h1>Dashboard</h1>
-  <p class="muted">आपकी पूरी educational website को एक जगह से manage करें.</p>
-  <div class="grid">
-    <div class="card"><span class="muted">Materials</span><div class="stat" id="statMaterials">—</div><small class="muted">Study resources</small></div>
-    <div class="card"><span class="muted">Quizzes</span><div class="stat" id="statQuizzes">0</div><small class="muted">Practice sets</small></div>
-    <div class="card"><span class="muted">Social Links</span><div class="stat" id="statSocial">3</div><small class="muted">Connected profiles</small></div>
-    <div class="card"><span class="muted">Status</span><div class="stat">🟢</div><small class="muted">Admin online</small></div>
-  </div>
+    padding:8px;
+  }
 
-  <div class="glass section">
-    <div class="toolbar">
-      <div><h2>🚀 Quick Actions</h2><p class="muted">बार-बार इस्तेमाल होने वाले काम.</p></div>
-      <div class="actions">
-        <button class="btn" onclick="openPage('materials')">＋ Upload Material</button>
-        <button class="btn secondary" onclick="openPage('quiz')">＋ Create Quiz</button>
-        <button class="btn secondary" onclick="openPage('social')">🔗 Social Links</button>
-      </div>
-    </div>
-  </div>
-</section>
+  .profile{
+    display:none;
+  }
 
-<section id="materials" class="page">
-  <div class="toolbar">
-    <div><h1>📚 Study Materials</h1><p class="muted">Notes, PDFs, worksheets और अन्य resources.</p></div>
-  </div>
+  .nav{
+    display:flex;
+    overflow:auto;
+    gap:5px;
+  }
 
-  <div class="glass section">
-    <h2>Upload Material</h2>
-    <form id="materialForm" enctype="multipart/form-data">
-      <div class="form-grid">
-        <label>Title<input name="title" required placeholder="Tenses — Complete Notes"></label>
-        <label>Class<select name="className"><option>All Classes</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
-        <label>Subject<select name="subject"><option>English</option><option>Hindi</option><option>Maths</option><option>Science</option><option>Social Science</option><option>Rajasthan GK</option><option>Competitive Exams</option><option>Other</option></select></label>
-        <label>Type<select name="type"><option>Notes</option><option>PDF</option><option>Worksheet</option><option>Question Paper</option><option>Video</option><option>Audio</option><option>Image</option><option>Other</option></select></label>
-        <label>Chapter<input name="chapter" placeholder="Grammar / Tenses"></label>
-        <label>Description<textarea name="description" placeholder="Short description"></textarea></label>
-        <label class="full">File<input name="file" type="file" required></label>
-      </div>
-      <br><button class="btn" type="submit">📤 Upload Material</button>
-      <span id="upmsg" class="muted"></span>
-    </form>
-  </div>
+  .nav button{
+    white-space:nowrap;
+    width:auto;
+  }
 
-  <div class="glass section">
-    <div class="toolbar"><h2>Uploaded Materials</h2><span class="badge" id="materialCount">0</span></div>
-    <div id="items"><div class="empty">Loading...</div></div>
-  </div>
-</section>
+  .content{
+    padding:18px;
+  }
 
-<section id="quiz" class="page">
-  <h1>🎯 Quiz & Practice</h1>
-  <p class="muted">Chapter-wise MCQ quiz बनाने के लिए तैयार section.</p>
-  <div class="glass section">
-    <h2>Create Quiz</h2>
-    <div class="form-grid">
-      <label>Quiz Title<input id="quizTitle" placeholder="Tenses Practice Quiz"></label>
-      <label>Class<select id="quizClass"><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
-      <label>Subject<input id="quizSubject" placeholder="English"></label>
-      <label>Chapter<input id="quizChapter" placeholder="Tenses"></label>
-      <label class="full">Question<input id="quizQuestion" placeholder="Choose the correct answer..."></label>
-      <label>Option A<input id="qa" placeholder="Option A"></label>
-      <label>Option B<input id="qb" placeholder="Option B"></label>
-      <label>Option C<input id="qc" placeholder="Option C"></label>
-      <label>Option D<input id="qd" placeholder="Option D"></label>
-      <label>Correct Answer<select id="correct"><option>A</option><option>B</option><option>C</option><option>D</option></select></label>
-    </div>
-    <br><button class="btn" onclick="saveQuiz()">＋ Save Question</button>
-    <div id="quizMsg"></div>
-  </div>
-  <div class="glass section">
-    <h2>Saved Questions</h2>
-    <div id="quizList" class="empty">No quiz questions yet.</div>
-  </div>
-</section>
-
-<section id="social" class="page">
-  <h1>🔗 Social Links</h1>
-  <p class="muted">Student website पर दिखने वाले आपके social profiles.</p>
-  <div class="glass section">
-    <div class="form-grid">
-      <label>Instagram<input id="instagram" value="@Sir_mahee" placeholder="@username"></label>
-      <label>YouTube<input id="youtube" value="Sir_mahee" placeholder="Channel name / URL"></label>
-      <label>Telegram<input id="telegram" value="Sir_mahee" placeholder="Username"></label>
-      <label>Facebook<input id="facebook" placeholder="Facebook URL"></label>
-      <label class="full">WhatsApp / Contact<input id="whatsapp" placeholder="+91..."></label>
-    </div>
-    <br><button class="btn" onclick="saveSocial()">💾 Save Social Links</button>
-    <div id="socialMsg"></div>
-  </div>
-</section>
-
-<section id="announcements" class="page">
-  <h1>📢 Announcements</h1>
-  <p class="muted">Students के लिए important notice / update.</p>
-  <div class="glass section">
-    <div class="form-grid">
-      <label>Title<input id="annTitle" placeholder="New Notes Uploaded"></label>
-      <label>Type<select id="annType"><option>Notice</option><option>Important</option><option>Update</option></select></label>
-      <label class="full">Message<textarea id="annMessage" placeholder="Announcement लिखें..."></textarea></label>
-    </div>
-    <br><button class="btn" onclick="saveAnnouncement()">📢 Publish</button>
-    <div id="annMsg"></div>
-  </div>
-</section>
-
-<section id="settings" class="page">
-  <h1>⚙️ Website Settings</h1>
-  <div class="glass section">
-    <div class="form-grid">
-      <label>Website Name<input id="siteName" value="Study with Sir Mahee"></label>
-      <label>Teacher Name<input id="teacherName" value="Sir Mahee"></label>
-      <label class="full">Tagline<input id="tagline" value="Clear concepts • Brighter tomorrow"></label>
-    </div>
-    <br><button class="btn" onclick="saveSettings()">💾 Save Settings</button>
-    <div id="settingsMsg"></div>
-  </div>
-</section>
-
-<footer>© 2026 Sir Mahee • Admin Dashboard</footer>
-</main>
-</div>
-
-<script>
-const $=id=>document.getElementById(id);
-
-document.querySelectorAll(".nav button").forEach(btn=>{
-  btn.addEventListener("click",()=>openPage(btn.dataset.page));
-});
-
-function openPage(page){
-  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
-  $(page).classList.add("active");
-  document.querySelector(`.nav button[data-page="${page}"]`)?.classList.add("active");
-  if(page==="materials") loadMaterials();
-  if(page==="quiz") renderQuizzes();
-}
-
-async function me(){
-  try{
-    const r=await fetch("/api/me",{credentials:"include"});
-    const x=await r.json();
-    if(!x.loggedIn){ location.href="/admin.html"; return; }
-    loadMaterials();
-  }catch(e){ console.log(e); }
-}
-
-async function logout(){
-  try{await fetch("/api/logout",{method:"POST",credentials:"include"});}catch(e){}
-  location.reload();
-}
-
-$("materialForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  $("upmsg").textContent=" Uploading...";
-  try{
-    const r=await fetch("/api/materials",{method:"POST",body:new FormData($("materialForm")),credentials:"include"});
-    const data=await r.json().catch(()=>({}));
-    if(r.ok){
-      $("materialForm").reset();
-      $("upmsg").textContent=" ✓ Uploaded";
-      loadMaterials();
-    }else $("upmsg").textContent=" ✕ "+(data.error||"Upload failed");
-  }catch(err){$("upmsg").textContent=" ✕ Server error";}
-});
-
-async function loadMaterials(){
-  try{
-    const r=await fetch("/api/materials");
-    const a=await r.json();
-    $("statMaterials").textContent=a.length;
-    $("materialCount").textContent=a.length;
-    if(!a.length){$("items").innerHTML='<div class="empty">No materials yet.</div>';return}
-    $("items").innerHTML=a.map(x=>`
-      <div class="item">
-        <div class="item-info">
-          <b>📄 ${esc(x.title)}</b>
-          <small>${esc(x.subject)} • Class ${esc(x.class_name)} • ${esc(x.type)}</small>
-        </div>
-        <div class="actions">
-          <a class="btn secondary" href="/uploads/${encodeURIComponent(x.stored_name)}" target="_blank">Open</a>
-          <button class="btn danger" onclick="delMaterial(${x.id})">Delete</button>
-        </div>
-      </div>`).join("");
-  }catch(e){
-    $("items").innerHTML='<div class="empty">Materials load नहीं हो पाए.</div>';
+  .grid{
+    grid-template-columns:repeat(2,1fr);
   }
 }
 
-async function delMaterial(id){
-  if(!confirm("Delete this material?"))return;
-  await fetch("/api/materials/"+id,{method:"DELETE",credentials:"include"});
-  loadMaterials();
+@media(max-width:560px){
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .topbar{
+    padding:0 12px;
+  }
+
+  .top-actions a{
+    display:none;
+  }
+
+  .content{
+    padding:14px;
+  }
+
+  .section{
+    padding:15px;
+  }
+
+  .item{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .actions{
+    width:100%;
+  }
+
+  .actions .btn,
+  .actions a{
+    flex:1;
+    text-align:center;
+  }
 }
+</style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+
+<header class="topbar">
+
+  <div class="brand">
+    🔐 <span>Sir Mahee</span> Admin
+  </div>
+
+  <div class="top-actions">
+
+    <a href="/" target="_blank">
+      Student Website ↗
+    </a>
+
+    <button
+      class="logout"
+      onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+
+</header>
+
+
+<!-- ================= MAIN LAYOUT ================= -->
+
+<div class="layout">
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+  <div class="profile">
+
+    <div class="avatar">
+      👨‍🏫
+    </div>
+
+    <b>Sir Mahee</b>
+
+    <br>
+
+    <small>
+      Teacher • Creator • Admin
+    </small>
+
+  </div>
+
+
+  <nav class="nav">
+
+    <button
+      class="active"
+      data-page="dashboard">
+      📊 Dashboard
+    </button>
+
+    <button
+      data-page="materials">
+      📚 Study Materials
+    </button>
+
+    <button
+      data-page="quiz">
+      🎯 Quiz & Practice
+    </button>
+
+    <button
+      data-page="social">
+      🔗 Social Links
+    </button>
+
+    <button
+      data-page="announcements">
+      📢 Announcements
+    </button>
+
+    <button
+      data-page="settings">
+      ⚙️ Settings
+    </button>
+
+  </nav>
+
+</aside>
+
+
+<!-- ================= CONTENT ================= -->
+
+<main class="content">
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section
+  id="dashboard"
+  class="page active">
+
+  <h1>
+    Dashboard
+  </h1>
+
+  <p class="muted">
+    आपकी पूरी educational website को एक जगह से manage करें.
+  </p>
+
+
+  <div class="grid">
+
+    <div class="card">
+
+      <span class="muted">
+        Materials
+      </span>
+
+      <div
+        class="stat"
+        id="statMaterials">
+        —
+      </div>
+
+      <small class="muted">
+        Study resources
+      </small>
+
+    </div>
+
+
+    <div class="card">
+
+      <span class="muted">
+        Quizzes
+      </span>
+
+      <div
+        class="stat"
+        id="statQuizzes">
+        0
+      </div>
+
+      <small class="muted">
+        Practice questions
+      </small>
+
+    </div>
+
+
+    <div class="card">
+
+      <span class="muted">
+        Social Links
+      </span>
+
+      <div
+        class="stat"
+        id="statSocial">
+        3
+      </div>
+
+      <small class="muted">
+        Connected profiles
+      </small>
+
+    </div>
+
+
+    <div class="card">
+
+      <span class="muted">
+        Status
+      </span>
+
+      <div class="stat">
+        🟢
+      </div>
+
+      <small class="muted">
+        Admin online
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <div class="glass section">
+
+    <div class="toolbar">
+
+      <div>
+
+        <h2>
+          🚀 Quick Actions
+        </h2>
+
+        <p class="muted">
+          बार-बार इस्तेमाल होने वाले काम.
+        </p>
+
+      </div>
+
+
+      <div class="actions">
+
+        <button
+          class="btn"
+          onclick="openPage('materials')">
+          ＋ Upload Material
+        </button>
+
+        <button
+          class="btn secondary"
+          onclick="openPage('quiz')">
+          ＋ Create Quiz
+        </button>
+
+        <button
+          class="btn secondary"
+          onclick="openPage('social')">
+          🔗 Social Links
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= MATERIALS ================= -->
+
+<section
+  id="materials"
+  class="page">
+
+  <div class="toolbar">
+
+    <div>
+
+      <h1>
+        📚 Study Materials
+      </h1>
+
+      <p class="muted">
+        Notes, PDFs, worksheets और अन्य resources.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="glass section">
+
+    <h2>
+      Upload Material
+    </h2>
+
+
+    <form
+      id="materialForm"
+      enctype="multipart/form-data">
+
+
+      <div class="form-grid">
+
+
+        <label>
+          Title
+
+          <input
+            name="title"
+            required
+            placeholder="Tenses — Complete Notes">
+        </label>
+
+
+        <label>
+          Class
+
+          <select name="className">
+
+            <option>
+              All Classes
+            </option>
+
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+          Subject
+
+          <select name="subject">
+
+            <option>English</option>
+            <option>Hindi</option>
+            <option>Maths</option>
+            <option>Science</option>
+            <option>Social Science</option>
+            <option>Rajasthan GK</option>
+            <option>Competitive Exams</option>
+            <option>Other</option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+          Type
+
+          <select name="type">
+
+            <option>Notes</option>
+            <option>PDF</option>
+            <option>Worksheet</option>
+            <option>Question Paper</option>
+            <option>Video</option>
+            <option>Audio</option>
+            <option>Image</option>
+            <option>Other</option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+          Chapter
+
+          <input
+            name="chapter"
+            placeholder="Grammar / Tenses">
+
+        </label>
+
+
+        <label>
+          Description
+
+          <textarea
+            name="description"
+            placeholder="Short description">
+          </textarea>
+
+        </label>
+
+
+        <label class="full">
+
+          File
+
+          <input
+            name="file"
+            type="file"
+            required>
+
+        </label>
+
+
+      </div>
+
+
+      <br>
+
+
+      <button
+        class="btn"
+        type="submit">
+
+        📤 Upload Material
+
+      </button>
+
+
+      <span
+        id="upmsg"
+        class="muted">
+      </span>
+
+
+    </form>
+
+  </div>
+
+
+  <div class="glass section">
+
+    <div class="toolbar">
+
+      <h2>
+        Uploaded Materials
+      </h2>
+
+      <span
+        class="badge"
+        id="materialCount">
+        0
+      </span>
+
+    </div>
+
+
+    <div id="items">
+
+      <div class="empty">
+        Loading...
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= QUIZ ================= -->
+
+<section
+  id="quiz"
+  class="page">
+
+  <h1>
+    🎯 Quiz & Practice
+  </h1>
+
+  <p class="muted">
+    Chapter-wise MCQ quiz बनाने का section.
+  </p>
+
+
+  <div class="glass section">
+
+    <h2>
+      Create Quiz Question
+    </h2>
+
+
+    <div class="form-grid">
+
+
+      <label>
+        Quiz Title
+
+        <input
+          id="quizTitle"
+          placeholder="Tenses Practice Quiz">
+
+      </label>
+
+
+      <label>
+        Class
+
+        <select id="quizClass">
+
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+          <option>9</option>
+          <option>10</option>
+
+        </select>
+
+      </label>
+
+
+      <label>
+        Subject
+
+        <input
+          id="quizSubject"
+          placeholder="English">
+
+      </label>
+
+
+      <label>
+        Chapter
+
+        <input
+          id="quizChapter"
+          placeholder="Tenses">
+
+      </label>
+
+
+      <label class="full">
+
+        Question
+
+        <input
+          id="quizQuestion"
+          placeholder="Choose the correct answer...">
+
+      </label>
+
+
+      <label>
+        Option A
+
+        <input
+          id="qa"
+          placeholder="Option A">
+
+      </label>
+
+
+      <label>
+        Option B
+
+        <input
+          id="qb"
+          placeholder="Option B">
+
+      </label>
+
+
+      <label>
+        Option C
+
+        <input
+          id="qc"
+          placeholder="Option C">
+
+      </label>
+
+
+      <label>
+        Option D
+
+        <input
+          id="qd"
+          placeholder="Option D">
+
+      </label>
+
+
+      <label>
+        Correct Answer
+
+        <select id="correct">
+
+          <option>A</option>
+          <option>B</option>
+          <option>C</option>
+          <option>D</option>
+
+        </select>
+
+      </label>
+
+
+    </div>
+
+
+    <br>
+
+
+    <button
+      class="btn"
+      onclick="saveQuiz()">
+
+      ＋ Save Question
+
+    </button>
+
+
+    <div id="quizMsg"></div>
+
+  </div>
+
+
+  <div class="glass section">
+
+    <h2>
+      Saved Questions
+    </h2>
+
+    <div
+      id="quizList"
+      class="empty">
+
+      No quiz questions yet.
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= SOCIAL ================= -->
+
+<section
+  id="social"
+  class="page">
+
+  <h1>
+    🔗 Social Links
+  </h1>
+
+  <p class="muted">
+    Student website पर दिखने वाले आपके social profiles.
+  </p>
+
+
+  <div class="glass section">
+
+    <div class="form-grid">
+
+
+      <label>
+        Instagram
+
+        <input
+          id="instagram"
+          value="@Sir_mahee"
+          placeholder="@username">
+
+      </label>
+
+
+      <label>
+        YouTube
+
+        <input
+          id="youtube"
+          value="Sir_mahee"
+          placeholder="Channel name / URL">
+
+      </label>
+
+
+      <label>
+        Telegram
+
+        <input
+          id="telegram"
+          value="Sir_mahee"
+          placeholder="Username">
+
+      </label>
+
+
+      <label>
+        Facebook
+
+        <input
+          id="facebook"
+          placeholder="Facebook URL">
+
+      </label>
+
+
+      <label class="full">
+
+        WhatsApp / Contact
+
+        <input
+          id="whatsapp"
+          placeholder="+91...">
+
+      </label>
+
+
+    </div>
+
+
+    <br>
+
+
+    <button
+      class="btn"
+      onclick="saveSocial()">
+
+      💾 Save Social Links
+
+    </button>
+
+
+    <div id="socialMsg"></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= ANNOUNCEMENTS ================= -->
+
+<section
+  id="announcements"
+  class="page">
+
+  <h1>
+    📢 Announcements
+  </h1>
+
+  <p class="muted">
+    Students के लिए important notice / update.
+  </p>
+
+
+  <div class="glass section">
+
+    <div class="form-grid">
+
+
+      <label>
+
+        Title
+
+        <input
+          id="annTitle"
+          placeholder="New Notes Uploaded">
+
+      </label>
+
+
+      <label>
+
+        Type
+
+        <select id="annType">
+
+          <option>
+            Notice
+          </option>
+
+          <option>
+            Important
+          </option>
+
+          <option>
+            Update
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label class="full">
+
+        Message
+
+        <textarea
+          id="annMessage"
+          placeholder="Announcement लिखें...">
+        </textarea>
+
+      </label>
+
+
+    </div>
+
+
+    <br>
+
+
+    <button
+      class="btn"
+      onclick="saveAnnouncement()">
+
+      📢 Publish
+
+    </button>
+
+
+    <div id="annMsg"></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section
+  id="settings"
+  class="page">
+
+  <h1>
+    ⚙️ Website Settings
+  </h1>
+
+
+  <div class="glass section">
+
+
+    <div class="form-grid">
+
+
+      <label>
+
+        Website Name
+
+        <input
+          id="siteName"
+          value="Study with Sir Mahee">
+
+      </label>
+
+
+      <label>
+
+        Teacher Name
+
+        <input
+          id="teacherName"
+          value="Sir Mahee">
+
+      </label>
+
+
+      <label class="full">
+
+        Tagline
+
+        <input
+          id="tagline"
+          value="Clear concepts • Brighter tomorrow">
+
+      </label>
+
+
+    </div>
+
+
+    <br>
+
+
+    <button
+      class="btn"
+      onclick="saveSettings()">
+
+      💾 Save Settings
+
+    </button>
+
+
+    <div id="settingsMsg"></div>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  © 2026 Sir Mahee • Admin Dashboard
+
+</footer>
+
+
+</main>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/* ================= NAVIGATION ================= */
+
+document
+  .querySelectorAll(".nav button")
+  .forEach(btn => {
+
+    btn.addEventListener(
+      "click",
+      () => openPage(btn.dataset.page)
+    );
+
+  });
+
+
+function openPage(page){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+
+  document
+    .querySelectorAll(".nav button")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+
+  const section = $(page);
+
+  if(section){
+    section.classList.add("active");
+  }
+
+
+  const navButton =
+    document.querySelector(
+      `.nav button[data-page="${page}"]`
+    );
+
+
+  if(navButton){
+    navButton.classList.add("active");
+  }
+
+
+  if(page === "materials"){
+    loadMaterials();
+  }
+
+
+  if(page === "quiz"){
+    renderQuizzes();
+  }
+
+}
+
+
+/* ================= LOGIN CHECK ================= */
+
+async function me(){
+
+  try{
+
+    const r =
+      await fetch(
+        "/api/me",
+        {
+          credentials:"include"
+        }
+      );
+
+
+    const data =
+      await r.json();
+
+
+    if(!data.loggedIn){
+
+      location.href =
+        "/admin.html";
+
+      return;
+
+    }
+
+
+    loadMaterials();
+
+  }
+
+  catch(error){
+
+    console.error(
+      "Session check failed:",
+      error
+    );
+
+  }
+
+}
+
+
+/* ================= LOGOUT ================= */
+
+async function logout(){
+
+  try{
+
+    await fetch(
+      "/api/logout",
+      {
+        method:"POST",
+        credentials:"include"
+      }
+    );
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+  }
+
+
+  location.href =
+    "/admin.html";
+
+}
+
+
+/* ================= MATERIAL UPLOAD ================= */
+
+$("materialForm")
+.addEventListener(
+  "submit",
+  async function(e){
+
+    e.preventDefault();
+
+
+    $("upmsg").textContent =
+      " Uploading...";
+
+
+    try{
+
+      const response =
+        await fetch(
+          "/api/materials",
+          {
+            method:"POST",
+            body:new FormData(
+              $("materialForm")
+            ),
+            credentials:"include"
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(() => ({}));
+
+
+      if(response.ok){
+
+        $("materialForm").reset();
+
+
+        $("upmsg").textContent =
+          " ✓ Uploaded successfully";
+
+
+        loadMaterials();
+
+      }
+
+      else{
+
+        $("upmsg").textContent =
+          " ✕ " +
+          (
+            data.error ||
+            "Upload failed"
+          );
+
+      }
+
+    }
+
+    catch(error){
+
+      $("upmsg").textContent =
+        " ✕ Server connection error";
+
+      console.error(error);
+
+    }
+
+  }
+);
+
+
+/* ================= LOAD MATERIALS ================= */
+
+async function loadMaterials(){
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/materials",
+        {
+          credentials:"include"
+        }
+      );
+
+
+    const materials =
+      await response.json();
+
+
+    $("statMaterials")
+      .textContent =
+      materials.length;
+
+
+    $("materialCount")
+      .textContent =
+      materials.length;
+
+
+    if(!materials.length){
+
+      $("items").innerHTML =
+        `
+        <div class="empty">
+          No materials uploaded yet.
+        </div>
+        `;
+
+      return;
+
+    }
+
+
+    $("items").innerHTML =
+      materials
+      .map(material => `
+
+        <div class="item">
+
+          <div class="item-info">
+
+            <b>
+              📄
+              ${esc(material.title)}
+            </b>
+
+            <small>
+              ${esc(material.subject)}
+              • Class
+              ${esc(material.class_name)}
+              •
+              ${esc(material.type)}
+            </small>
+
+          </div>
+
+
+          <div class="actions">
+
+            <a
+              class="btn secondary"
+              href="/uploads/${encodeURIComponent(material.stored_name)}"
+              target="_blank">
+
+              Open
+
+            </a>
+
+
+            <button
+              class="btn danger"
+              onclick="deleteMaterial(${material.id})">
+
+              Delete
+
+            </button>
+
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    $("items").innerHTML =
+      `
+      <div class="error">
+        Materials load नहीं हो पाए.
+      </div>
+      `;
+
+  }
+
+}
+
+
+/* ================= DELETE MATERIAL ================= */
+
+async function deleteMaterial(id){
+
+  if(
+    !confirm(
+      "क्या आप इस material को delete करना चाहते हैं?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  try{
+
+    await fetch(
+      "/api/materials/" + id,
+      {
+        method:"DELETE",
+        credentials:"include"
+      }
+    );
+
+
+    loadMaterials();
+
+  }
+
+  catch(error){
+
+    alert(
+      "Delete नहीं हो पाया."
+    );
+
+  }
+
+}
+
+
+/* ================= QUIZ ================= */
 
 function saveQuiz(){
-  const q={
-    title:$("quizTitle").value.trim(),
-    cls:$("quizClass").value,
-    subject:$("quizSubject").value.trim(),
-    chapter:$("quizChapter").value.trim(),
-    question:$("quizQuestion").value.trim(),
-    a:$("qa").value.trim(),b:$("qb").value.trim(),
-    c:$("qc").value.trim(),d:$("qd").value.trim(),
-    correct:$("correct").value
+
+  const quiz = {
+
+    title:
+      $("quizTitle")
+      .value
+      .trim(),
+
+    cls:
+      $("quizClass")
+      .value,
+
+    subject:
+      $("quizSubject")
+      .value
+      .trim(),
+
+    chapter:
+      $("quizChapter")
+      .value
+      .trim(),
+
+    question:
+      $("quizQuestion")
+      .value
+      .trim(),
+
+    a:
+      $("qa")
+      .value
+      .trim(),
+
+    b:
+      $("qb")
+      .value
+      .trim(),
+
+    c:
+      $("qc")
+      .value
+      .trim(),
+
+    d:
+      $("qd")
+      .value
+      .trim(),
+
+    correct:
+      $("correct")
+      .value
+
   };
-  if(!q.question||!q.a||!q.b){$("quizMsg").innerHTML='<div class="notice">Question और कम-से-कम A/B options भरें.</div>';return}
-  const arr=JSON.parse(localStorage.getItem("sirMaheeQuizzes")||"[]");
-  arr.push(q);localStorage.setItem("sirMaheeQuizzes",JSON.stringify(arr));
-  $("statQuizzes").textContent=arr.length;
-  $("quizMsg").innerHTML='<div class="notice">✓ Question saved locally. Backend Quiz API अगला step है.</div>';
+
+
+  if(
+    !quiz.question ||
+    !quiz.a ||
+    !quiz.b
+  ){
+
+    $("quizMsg").innerHTML =
+      `
+      <div class="error">
+        Question और कम-से-कम A/B options भरें.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  const quizzes =
+    JSON.parse(
+      localStorage.getItem(
+        "sirMaheeQuizzes"
+      ) || "[]"
+    );
+
+
+  quizzes.push(quiz);
+
+
+  localStorage.setItem(
+    "sirMaheeQuizzes",
+    JSON.stringify(quizzes)
+  );
+
+
+  $("quizMsg").innerHTML =
+    `
+    <div class="notice">
+      ✓ Question saved.
+    </div>
+    `;
+
+
+  $("statQuizzes")
+    .textContent =
+    quizzes.length;
+
+
   renderQuizzes();
+
 }
+
+
+/* ================= RENDER QUIZ ================= */
 
 function renderQuizzes(){
-  const arr=JSON.parse(localStorage.getItem("sirMaheeQuizzes")||"[]");
-  $("statQuizzes").textContent=arr.length;
-  if(!arr.length){$("quizList").innerHTML="No quiz questions yet.";return}
-  $("quizList").innerHTML=arr.map((q,i)=>`
-    <div class="item"><div class="item-info"><b>${i+1}. ${esc(q.question)}</b>
-    <small>${esc(q.subject)} • Class ${esc(q.cls)} • Correct: ${q.correct}</small></div>
-    <button class="btn danger" onclick="deleteQuiz(${i})">Delete</button></div>`).join("");
+
+  const quizzes =
+    JSON.parse(
+      localStorage.getItem(
+        "sirMaheeQuizzes"
+      ) || "[]"
+    );
+
+
+  $("statQuizzes")
+    .textContent =
+    quizzes.length;
+
+
+  if(!quizzes.length){
+
+    $("quizList").innerHTML =
+      `
+      <div class="empty">
+        No quiz questions yet.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  $("quizList").innerHTML =
+    quizzes
+    .map(
+      (quiz,index) => `
+
+      <div class="item">
+
+        <div class="item-info">
+
+          <b>
+            ${index + 1}.
+            ${esc(quiz.question)}
+          </b>
+
+          <small>
+
+            ${esc(quiz.subject)}
+            • Class ${esc(quiz.cls)}
+            • Correct:
+            ${esc(quiz.correct)}
+
+          </small>
+
+        </div>
+
+
+        <button
+          class="btn danger"
+          onclick="deleteQuiz(${index})">
+
+          Delete
+
+        </button>
+
+      </div>
+
+      `
+    )
+    .join("");
+
 }
-function deleteQuiz(i){
-  const arr=JSON.parse(localStorage.getItem("sirMaheeQuizzes")||"[]");
-  arr.splice(i,1);localStorage.setItem("sirMaheeQuizzes",JSON.stringify(arr));renderQuizzes();
+
+
+/* ================= DELETE QUIZ ================= */
+
+function deleteQuiz(index){
+
+  const quizzes =
+    JSON.parse(
+      localStorage.getItem(
+        "sirMaheeQuizzes"
+      ) || "[]"
+    );
+
+
+  quizzes.splice(
+    index,
+    1
+  );
+
+
+  localStorage.setItem(
+    "sirMaheeQuizzes",
+    JSON.stringify(quizzes)
+  );
+
+
+  renderQuizzes();
+
 }
+
+
+/* ================= SOCIAL LINKS ================= */
 
 function saveSocial(){
-  const data={
-    instagram:$("instagram").value,youtube:$("youtube").value,
-    telegram:$("telegram").value,facebook:$("facebook").value,whatsapp:$("whatsapp").value
+
+  const data = {
+
+    instagram:
+      $("instagram").value.trim(),
+
+    youtube:
+      $("youtube").value.trim(),
+
+    telegram:
+      $("telegram").value.trim(),
+
+    facebook:
+      $("facebook").value.trim(),
+
+    whatsapp:
+      $("whatsapp").value.trim()
+
   };
-  localStorage.setItem("sirMaheeSocial",JSON.stringify(data));
-  $("socialMsg").innerHTML='<div class="notice">✓ Social links saved.</div>';
+
+
+  localStorage.setItem(
+    "sirMaheeSocial",
+    JSON.stringify(data)
+  );
+
+
+  $("socialMsg").innerHTML =
+    `
+    <div class="notice">
+      ✓ Social links saved.
+    </div>
+    `;
+
 }
+
+
+/* ================= ANNOUNCEMENT ================= */
+
 function saveAnnouncement(){
-  const data={title:$("annTitle").value,message:$("annMessage").value,type:$("annType").value,date:new Date().toISOString()};
-  const arr=JSON.parse(localStorage.getItem("sirMaheeAnnouncements")||"[]");
-  arr.unshift(data);localStorage.setItem("sirMaheeAnnouncements",JSON.stringify(arr));
-  $("annMsg").innerHTML='<div class="notice">✓ Announcement saved.</div>';
+
+  const title =
+    $("annTitle")
+    .value
+    .trim();
+
+
+  const message =
+    $("annMessage")
+    .value
+    .trim();
+
+
+  if(!title || !message){
+
+    $("annMsg").innerHTML =
+      `
+      <div class="error">
+        Title और Message दोनों भरें.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  const announcement = {
+
+    title:title,
+
+    message:message,
+
+    type:
+      $("annType").value,
+
+    date:
+      new Date()
+      .toISOString()
+
+  };
+
+
+  const announcements =
+    JSON.parse(
+      localStorage.getItem(
+        "sirMaheeAnnouncements"
+      ) || "[]"
+    );
+
+
+  announcements.unshift(
+    announcement
+  );
+
+
+  localStorage.setItem(
+    "sirMaheeAnnouncements",
+    JSON.stringify(
+      announcements
+    )
+  );
+
+
+  $("annMsg").innerHTML =
+    `
+    <div class="notice">
+      ✓ Announcement saved.
+    </div>
+    `;
+
+
+  $("annTitle").value = "";
+  $("annMessage").value = "";
+
 }
+
+
+/* ================= SETTINGS ================= */
+
 function saveSettings(){
-  localStorage.setItem("sirMaheeSettings",JSON.stringify({
-    siteName:$("siteName").value,teacherName:$("teacherName").value,tagline:$("tagline").value
-  }));
-  $("settingsMsg").innerHTML='<div class="notice">✓ Settings saved.</div>';
+
+  const settings = {
+
+    siteName:
+      $("siteName").value.trim(),
+
+    teacherName:
+      $("teacherName").value.trim(),
+
+    tagline:
+      $("tagline").value.trim()
+
+  };
+
+
+  localStorage.setItem(
+    "sirMaheeSettings",
+    JSON.stringify(settings)
+  );
+
+
+  $("settingsMsg").innerHTML =
+    `
+    <div class="notice">
+      ✓ Settings saved.
+    </div>
+    `;
+
 }
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+
+
+/* ================= SECURITY ESCAPE ================= */
+
+function esc(value){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /[&<>"']/g,
+    function(match){
+
+      return {
+
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+
+      }[match];
+
+    }
+  );
+
+}
+
+
+/* ================= START ================= */
 
 me();
+
 </script>
+
 </body>
-</html>
+  </html>
