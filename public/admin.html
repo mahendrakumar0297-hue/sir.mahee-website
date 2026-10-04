@@ -3,1275 +3,396 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07111f">
-<title>Sir Mahee Admin</title>
-
-<link rel="stylesheet" href="/style.css">
-
+<title>Sir Mahee Admin Dashboard</title>
 <style>
 :root{
-  --bg:#06111d;
-  --text:#eef6ff;
-  --muted:#a9b8ca;
-  --line:rgba(255,255,255,.18);
-  --success:#71e6a8;
-  --danger:#ff7373;
+  --bg:#06111f;
+  --panel:rgba(255,255,255,.075);
+  --panel2:rgba(255,255,255,.105);
+  --line:rgba(255,255,255,.13);
+  --text:#eef7ff;
+  --muted:#9fb0c2;
+  --accent:#55c7ff;
+  --accent2:#7d7bff;
+  --danger:#ff6675;
+  --success:#56d6a0;
 }
-
-*{
-  box-sizing:border-box;
-}
-
-html,body{
-  margin:0;
-  min-height:100%;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-}
-
+*{box-sizing:border-box}
 body{
+  margin:0;color:var(--text);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   background:
-    radial-gradient(circle at 12% 12%,rgba(0,255,170,.22),transparent 30%),
-    radial-gradient(circle at 88% 8%,rgba(65,125,255,.27),transparent 32%),
-    radial-gradient(circle at 50% 90%,rgba(120,70,255,.18),transparent 35%),
+    radial-gradient(circle at 10% 5%,rgba(38,190,145,.22),transparent 28%),
+    radial-gradient(circle at 90% 10%,rgba(65,105,255,.25),transparent 30%),
+    radial-gradient(circle at 50% 100%,rgba(115,75,220,.14),transparent 35%),
     var(--bg);
-  background-attachment:fixed;
+  min-height:100vh;
 }
-
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:linear-gradient(
-    135deg,
-    rgba(255,255,255,.05),
-    transparent 35%,
-    rgba(255,255,255,.025)
-  );
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.topbar{
+  height:64px;padding:0 22px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:10;
+  background:rgba(4,13,24,.62);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line)
 }
-
-/* NAVBAR */
-
-nav{
-  position:sticky;
-  top:0;
-  z-index:10;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:15px 22px;
-
-  background:rgba(5,15,28,.55);
-  border-bottom:1px solid var(--line);
-
-  backdrop-filter:blur(22px) saturate(150%);
-  -webkit-backdrop-filter:blur(22px) saturate(150%);
+.brand{font-weight:800}.brand span{color:#66d2ff}
+.top-actions{display:flex;gap:10px;align-items:center}
+.top-actions a,.logout{
+  color:var(--text);text-decoration:none;border:1px solid var(--line);
+  background:var(--panel);padding:9px 13px;border-radius:12px
 }
-
-nav b{
-  font-size:15px;
+.layout{display:grid;grid-template-columns:235px 1fr;min-height:calc(100vh - 64px)}
+.sidebar{
+  border-right:1px solid var(--line);padding:20px 14px;
+  background:rgba(0,0,0,.12);backdrop-filter:blur(18px)
 }
-
-nav a{
-  color:#d8e9fb;
-  text-decoration:none;
-  font-size:14px;
+.profile{padding:14px;margin-bottom:18px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+.avatar{font-size:30px}.profile small{color:var(--muted)}
+.nav button{
+  width:100%;border:0;background:transparent;color:var(--muted);
+  text-align:left;padding:12px 14px;border-radius:13px;margin:3px 0
 }
-
-/* MAIN */
-
-.admin{
-  max-width:1100px;
-  margin:0 auto;
-  padding:42px 18px 70px;
+.nav button.active,.nav button:hover{background:var(--panel2);color:#fff}
+.content{padding:28px;max-width:1250px;width:100%;margin:auto}
+.page{display:none}.page.active{display:block}
+h1,h2,h3,p{margin-top:0}
+.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card,.glass{
+  background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.045));
+  border:1px solid var(--line);border-radius:20px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.02) inset;
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)
 }
-
-/* LIQUID GLASS */
-
-.glass{
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.13),
-      rgba(255,255,255,.055)
-    );
-
-  border:1px solid var(--line);
-
-  box-shadow:
-    0 20px 55px rgba(0,0,0,.20),
-    inset 0 1px 0 rgba(255,255,255,.10);
-
-  backdrop-filter:blur(24px) saturate(145%);
-  -webkit-backdrop-filter:blur(24px) saturate(145%);
-}
-
-.panel{
-  border-radius:24px;
-  padding:26px;
-}
-
-#login{
-  max-width:540px;
-  margin:7vh auto;
-}
-
-/* TEXT */
-
-h1{
-  margin:0 0 18px;
-  font-size:28px;
-}
-
-h2{
-  margin:0 0 18px;
-  font-size:20px;
-}
-
-p{
-  color:var(--muted);
-}
-
-/* INPUTS */
-
-input,
-select,
-textarea{
-  width:100%;
-
-  margin-top:8px;
-  padding:13px 14px;
-
-  border-radius:13px;
-
-  color:var(--text);
-  background:rgba(0,0,0,.18);
-
-  border:1px solid rgba(255,255,255,.16);
-
-  outline:none;
-
-  font:inherit;
-}
-
-input:focus,
-select:focus,
-textarea:focus{
-  border-color:rgba(118,199,255,.75);
-
-  box-shadow:
-    0 0 0 3px rgba(118,199,255,.12);
-}
-
-textarea{
-  min-height:105px;
-  resize:vertical;
-}
-
-label{
-  display:block;
-  color:#dce9f6;
-  font-size:14px;
-  margin-bottom:15px;
-}
-
-/* BUTTONS */
-
-button{
-  border:0;
-  border-radius:12px;
-
-  padding:11px 18px;
-
-  color:#06111d;
-  background:#dff3ff;
-
-  font-weight:700;
-  cursor:pointer;
-
-  transition:
-    .18s transform,
-    .18s opacity;
-}
-
-button:hover{
-  transform:translateY(-1px);
-  opacity:.92;
-}
-
-button:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-  transform:none;
-}
-
+.card{padding:18px}.stat{font-size:27px;font-weight:800;margin:8px 0}
+.section{padding:20px;margin-top:18px}
+.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .btn{
-  background:rgba(255,255,255,.14);
-  color:#eef7ff;
-
-  border:1px solid var(--line);
+  border:1px solid rgba(255,255,255,.18);color:#fff;
+  background:linear-gradient(135deg,rgba(83,201,255,.34),rgba(111,101,255,.34));
+  padding:10px 15px;border-radius:12px
 }
-
-.danger{
-  background:rgba(255,75,75,.16);
-  color:#ffd9d9;
-
-  border:1px solid rgba(255,100,100,.28);
+.btn.secondary{background:var(--panel)}
+.btn.danger{background:rgba(255,70,90,.2);border-color:rgba(255,90,110,.3)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+label{display:block;color:#c7d3df;font-size:13px}
+input,select,textarea{
+  width:100%;margin-top:7px;border:1px solid var(--line);
+  background:rgba(2,10,20,.42);color:#fff;border-radius:12px;
+  padding:11px 12px;outline:none
 }
-
-/* LAYOUT */
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
+textarea{min-height:105px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:rgba(85,199,255,.6)}
+.full{grid-column:1/-1}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:#bcd0df;font-size:12px;text-transform:uppercase}
+.badge{padding:5px 9px;border-radius:99px;background:var(--panel2);font-size:12px}
+.item{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:15px;margin-top:10px;background:rgba(255,255,255,.045)}
+.item-info{min-width:0}.item-info b{display:block}.item-info small{color:var(--muted)}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.notice{padding:12px 14px;border-radius:13px;margin-top:12px;background:rgba(86,214,160,.1);border:1px solid rgba(86,214,160,.2)}
+footer{color:var(--muted);text-align:center;padding:30px}
+@media(max-width:850px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:sticky;top:64px;z-index:8;border-right:0;border-bottom:1px solid var(--line);padding:8px}
+  .profile{display:none}
+  .nav{display:flex;overflow:auto;gap:5px}
+  .nav button{white-space:nowrap;width:auto}
+  .content{padding:18px}
+  .grid{grid-template-columns:repeat(2,1fr)}
 }
-
-.two{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:4px 18px;
-}
-
-.status{
-  min-height:22px;
-  margin:12px 0 0;
-  font-size:14px;
-}
-
-.ok{
-  color:var(--success);
-}
-
-.err{
-  color:#ffaaa9;
-}
-
-.hidden{
-  display:none!important;
-}
-
-/* MATERIALS */
-
-.items{
-  display:grid;
-  gap:12px;
-}
-
-.item{
-  display:grid;
-
-  grid-template-columns:1fr auto;
-
-  gap:8px 14px;
-
-  padding:17px;
-
-  border-radius:17px;
-}
-
-.item .meta{
-  color:var(--muted);
-  font-size:13px;
-
-  grid-column:1/2;
-}
-
-.item .actions{
-  grid-column:2;
-  grid-row:1/3;
-
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.empty{
-  text-align:center;
-  color:var(--muted);
-  padding:25px;
-}
-
-.loading{
-  opacity:.7;
-}
-
-.badge{
-  display:inline-block;
-
-  padding:5px 9px;
-
-  border-radius:999px;
-
-  background:rgba(255,255,255,.09);
-
-  border:1px solid var(--line);
-
-  font-size:12px;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-  .two{
-    grid-template-columns:1fr;
-  }
-
-  .panel{
-    padding:19px;
-    border-radius:20px;
-  }
-
-  .admin{
-    padding:25px 12px 50px;
-  }
-
-  .row{
-    align-items:flex-start;
-  }
-
-  .item{
-    grid-template-columns:1fr;
-  }
-
-  .item .actions{
-    grid-column:1;
-    grid-row:auto;
-  }
-
-  h1{
-    font-size:24px;
-  }
+@media(max-width:560px){
+  .form-grid{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 12px}
+  .top-actions a{display:none}
 }
 </style>
 </head>
-
-
 <body>
 
-<nav>
+<header class="topbar">
+  <div class="brand">🔐 <span>Sir Mahee</span> Admin</div>
+  <div class="top-actions">
+    <a href="/" target="_blank">Student Website ↗</a>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</header>
 
-  <b>🔐 Sir Mahee Admin</b>
+<div class="layout">
+<aside class="sidebar">
+  <div class="profile">
+    <div class="avatar">👨‍🏫</div>
+    <b>Sir Mahee</b><br><small>Teacher • Creator • Admin</small>
+  </div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard">📊 Dashboard</button>
+    <button data-page="materials">📚 Study Materials</button>
+    <button data-page="quiz">🎯 Quiz & Practice</button>
+    <button data-page="social">🔗 Social Links</button>
+    <button data-page="announcements">📢 Announcements</button>
+    <button data-page="settings">⚙️ Settings</button>
+  </nav>
+</aside>
 
-  <a href="/">
-    Student Website ↗
-  </a>
+<main class="content">
 
-</nav>
+<section id="dashboard" class="page active">
+  <h1>Dashboard</h1>
+  <p class="muted">आपकी पूरी educational website को एक जगह से manage करें.</p>
+  <div class="grid">
+    <div class="card"><span class="muted">Materials</span><div class="stat" id="statMaterials">—</div><small class="muted">Study resources</small></div>
+    <div class="card"><span class="muted">Quizzes</span><div class="stat" id="statQuizzes">0</div><small class="muted">Practice sets</small></div>
+    <div class="card"><span class="muted">Social Links</span><div class="stat" id="statSocial">3</div><small class="muted">Connected profiles</small></div>
+    <div class="card"><span class="muted">Status</span><div class="stat">🟢</div><small class="muted">Admin online</small></div>
+  </div>
 
-
-<main class="admin">
-
-<!-- ================= LOGIN ================= -->
-
-<section id="login" class="glass panel">
-
-  <h1>
-    Admin Login
-  </h1>
-
-  <p>
-    Sign in to manage Sir Mahee study materials.
-  </p>
-
-
-  <form id="loginForm" autocomplete="on">
-
-    <label>
-      Email
-
-      <input
-        id="email"
-        name="email"
-        type="email"
-        autocomplete="username"
-        placeholder="Admin email"
-        required
-      >
-
-    </label>
-
-
-    <label>
-      Password
-
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="current-password"
-        placeholder="Admin password"
-        required
-      >
-
-    </label>
-
-
-    <button
-      id="loginBtn"
-      type="submit"
-    >
-      Login
-    </button>
-
-
-    <div
-      id="loginMsg"
-      class="status"
-    ></div>
-
-  </form>
-
+  <div class="glass section">
+    <div class="toolbar">
+      <div><h2>🚀 Quick Actions</h2><p class="muted">बार-बार इस्तेमाल होने वाले काम.</p></div>
+      <div class="actions">
+        <button class="btn" onclick="openPage('materials')">＋ Upload Material</button>
+        <button class="btn secondary" onclick="openPage('quiz')">＋ Create Quiz</button>
+        <button class="btn secondary" onclick="openPage('social')">🔗 Social Links</button>
+      </div>
+    </div>
+  </div>
 </section>
 
-
-
-<!-- ================= DASHBOARD ================= -->
-
-<section
-  id="dash"
-  class="hidden"
->
-
-
-<!-- CONTENT MANAGER -->
-
-<div class="glass panel">
-
-  <div class="row">
-
-    <div>
-
-      <h1>
-        📤 Content Manager
-      </h1>
-
-      <p>
-        Upload and manage your study material.
-      </p>
-
-    </div>
-
-
-    <button
-      class="btn"
-      id="logoutBtn"
-      type="button"
-    >
-      Logout
-    </button>
-
+<section id="materials" class="page">
+  <div class="toolbar">
+    <div><h1>📚 Study Materials</h1><p class="muted">Notes, PDFs, worksheets और अन्य resources.</p></div>
   </div>
 
-
-
-  <!-- UPLOAD FORM -->
-
-  <form
-    id="materialForm"
-    enctype="multipart/form-data"
-  >
-
-    <div class="two">
-
-
-      <label>
-        Title
-
-        <input
-          name="title"
-          required
-          placeholder="Tenses — Complete Notes"
-        >
-
-      </label>
-
-
-
-      <label>
-        Class
-
-        <select name="className">
-
-          <option>
-            All Classes
-          </option>
-
-          <option>5</option>
-          <option>6</option>
-          <option>7</option>
-          <option>8</option>
-          <option>9</option>
-          <option>10</option>
-
-        </select>
-
-      </label>
-
-
-
-      <label>
-        Subject
-
-        <select name="subject">
-
-          <option>English</option>
-          <option>Hindi</option>
-          <option>Maths</option>
-          <option>Science</option>
-          <option>Social Science</option>
-          <option>Rajasthan GK</option>
-          <option>Competitive Exams</option>
-          <option>Other</option>
-
-        </select>
-
-      </label>
-
-
-
-      <label>
-        Type
-
-        <select name="type">
-
-          <option>Notes</option>
-          <option>PDF</option>
-          <option>Worksheet</option>
-          <option>Question Paper</option>
-          <option>Video</option>
-          <option>Audio</option>
-          <option>Image</option>
-          <option>Other</option>
-
-        </select>
-
-      </label>
-
-
-
-      <label>
-        Chapter
-
-        <input
-          name="chapter"
-          placeholder="Grammar / Tenses"
-        >
-
-      </label>
-
-
-
-      <label>
-        Description
-
-        <textarea
-          name="description"
-          placeholder="Short description"
-        ></textarea>
-
-      </label>
-
-
-    </div>
-
-
-    <label>
-
-      File
-
-      <input
-        name="file"
-        type="file"
-        required
-      >
-
-    </label>
-
-
-    <button
-      id="uploadBtn"
-      type="submit"
-    >
-      ⬆️ Upload Material
-    </button>
-
-
-    <div
-      id="upmsg"
-      class="status"
-    ></div>
-
-  </form>
-
-</div>
-
-
-
-<!-- UPLOADED MATERIALS -->
-
-<div
-  class="glass panel"
-  style="margin-top:18px"
->
-
-  <div class="row">
-
-    <h2>
-      📚 Uploaded Materials
-    </h2>
-
-    <span
-      id="count"
-      class="badge"
-    >
-      0
-    </span>
-
+  <div class="glass section">
+    <h2>Upload Material</h2>
+    <form id="materialForm" enctype="multipart/form-data">
+      <div class="form-grid">
+        <label>Title<input name="title" required placeholder="Tenses — Complete Notes"></label>
+        <label>Class<select name="className"><option>All Classes</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
+        <label>Subject<select name="subject"><option>English</option><option>Hindi</option><option>Maths</option><option>Science</option><option>Social Science</option><option>Rajasthan GK</option><option>Competitive Exams</option><option>Other</option></select></label>
+        <label>Type<select name="type"><option>Notes</option><option>PDF</option><option>Worksheet</option><option>Question Paper</option><option>Video</option><option>Audio</option><option>Image</option><option>Other</option></select></label>
+        <label>Chapter<input name="chapter" placeholder="Grammar / Tenses"></label>
+        <label>Description<textarea name="description" placeholder="Short description"></textarea></label>
+        <label class="full">File<input name="file" type="file" required></label>
+      </div>
+      <br><button class="btn" type="submit">📤 Upload Material</button>
+      <span id="upmsg" class="muted"></span>
+    </form>
   </div>
 
-
-  <div
-    id="items"
-    class="items"
-  >
-
-    <div class="empty">
-      Loading...
-    </div>
-
+  <div class="glass section">
+    <div class="toolbar"><h2>Uploaded Materials</h2><span class="badge" id="materialCount">0</span></div>
+    <div id="items"><div class="empty">Loading...</div></div>
   </div>
-
-</div>
-
-
 </section>
 
+<section id="quiz" class="page">
+  <h1>🎯 Quiz & Practice</h1>
+  <p class="muted">Chapter-wise MCQ quiz बनाने के लिए तैयार section.</p>
+  <div class="glass section">
+    <h2>Create Quiz</h2>
+    <div class="form-grid">
+      <label>Quiz Title<input id="quizTitle" placeholder="Tenses Practice Quiz"></label>
+      <label>Class<select id="quizClass"><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
+      <label>Subject<input id="quizSubject" placeholder="English"></label>
+      <label>Chapter<input id="quizChapter" placeholder="Tenses"></label>
+      <label class="full">Question<input id="quizQuestion" placeholder="Choose the correct answer..."></label>
+      <label>Option A<input id="qa" placeholder="Option A"></label>
+      <label>Option B<input id="qb" placeholder="Option B"></label>
+      <label>Option C<input id="qc" placeholder="Option C"></label>
+      <label>Option D<input id="qd" placeholder="Option D"></label>
+      <label>Correct Answer<select id="correct"><option>A</option><option>B</option><option>C</option><option>D</option></select></label>
+    </div>
+    <br><button class="btn" onclick="saveQuiz()">＋ Save Question</button>
+    <div id="quizMsg"></div>
+  </div>
+  <div class="glass section">
+    <h2>Saved Questions</h2>
+    <div id="quizList" class="empty">No quiz questions yet.</div>
+  </div>
+</section>
+
+<section id="social" class="page">
+  <h1>🔗 Social Links</h1>
+  <p class="muted">Student website पर दिखने वाले आपके social profiles.</p>
+  <div class="glass section">
+    <div class="form-grid">
+      <label>Instagram<input id="instagram" value="@Sir_mahee" placeholder="@username"></label>
+      <label>YouTube<input id="youtube" value="Sir_mahee" placeholder="Channel name / URL"></label>
+      <label>Telegram<input id="telegram" value="Sir_mahee" placeholder="Username"></label>
+      <label>Facebook<input id="facebook" placeholder="Facebook URL"></label>
+      <label class="full">WhatsApp / Contact<input id="whatsapp" placeholder="+91..."></label>
+    </div>
+    <br><button class="btn" onclick="saveSocial()">💾 Save Social Links</button>
+    <div id="socialMsg"></div>
+  </div>
+</section>
+
+<section id="announcements" class="page">
+  <h1>📢 Announcements</h1>
+  <p class="muted">Students के लिए important notice / update.</p>
+  <div class="glass section">
+    <div class="form-grid">
+      <label>Title<input id="annTitle" placeholder="New Notes Uploaded"></label>
+      <label>Type<select id="annType"><option>Notice</option><option>Important</option><option>Update</option></select></label>
+      <label class="full">Message<textarea id="annMessage" placeholder="Announcement लिखें..."></textarea></label>
+    </div>
+    <br><button class="btn" onclick="saveAnnouncement()">📢 Publish</button>
+    <div id="annMsg"></div>
+  </div>
+</section>
+
+<section id="settings" class="page">
+  <h1>⚙️ Website Settings</h1>
+  <div class="glass section">
+    <div class="form-grid">
+      <label>Website Name<input id="siteName" value="Study with Sir Mahee"></label>
+      <label>Teacher Name<input id="teacherName" value="Sir Mahee"></label>
+      <label class="full">Tagline<input id="tagline" value="Clear concepts • Brighter tomorrow"></label>
+    </div>
+    <br><button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+    <div id="settingsMsg"></div>
+  </div>
+</section>
+
+<footer>© 2026 Sir Mahee • Admin Dashboard</footer>
 </main>
-
-
+</div>
 
 <script>
+const $=id=>document.getElementById(id);
 
-/* =========================================
-   BASIC HELPER
-========================================= */
+document.querySelectorAll(".nav button").forEach(btn=>{
+  btn.addEventListener("click",()=>openPage(btn.dataset.page));
+});
 
-const $ = id => document.getElementById(id);
+function openPage(page){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  $(page).classList.add("active");
+  document.querySelector(`.nav button[data-page="${page}"]`)?.classList.add("active");
+  if(page==="materials") loadMaterials();
+  if(page==="quiz") renderQuizzes();
+}
 
-
-
-/* =========================================
-   FETCH HELPER
-========================================= */
-
-async function jsonFetch(url, options = {}) {
-
-  const response = await fetch(
-    url,
-    {
-      credentials:"same-origin",
-      ...options
-    }
-  );
-
-  let data = {};
-
+async function me(){
   try{
-
-    data = await response.json();
-
-  }catch(_){}
-
-  return {
-    response,
-    data
-  };
+    const r=await fetch("/api/me",{credentials:"include"});
+    const x=await r.json();
+    if(!x.loggedIn){ location.href="/admin.html"; return; }
+    loadMaterials();
+  }catch(e){ console.log(e); }
 }
 
+async function logout(){
+  try{await fetch("/api/logout",{method:"POST",credentials:"include"});}catch(e){}
+  location.reload();
+}
 
-
-/* =========================================
-   SESSION CHECK
-========================================= */
-
-async function checkSession(){
-
+$("materialForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  $("upmsg").textContent=" Uploading...";
   try{
-
-    const {
-      response,
-      data
-    } = await jsonFetch("/api/me");
-
-
-    if(
-      response.ok &&
-      data.loggedIn
-    ){
-
-      showDashboard();
-
-      await loadMaterials();
-
-    }else{
-
-      showLogin();
-
-    }
-
-  }catch(err){
-
-    showLogin();
-
-    $("loginMsg").textContent =
-      "Server से connection नहीं हो रहा।";
-
-    $("loginMsg").className =
-      "status err";
-
-  }
-
-}
-
-
-
-/* =========================================
-   SHOW LOGIN
-========================================= */
-
-function showLogin(){
-
-  $("login")
-    .classList
-    .remove("hidden");
-
-  $("dash")
-    .classList
-    .add("hidden");
-
-}
-
-
-
-/* =========================================
-   SHOW DASHBOARD
-========================================= */
-
-function showDashboard(){
-
-  $("login")
-    .classList
-    .add("hidden");
-
-  $("dash")
-    .classList
-    .remove("hidden");
-
-}
-
-
-
-/* =========================================
-   LOGIN
-========================================= */
-
-$("loginForm").addEventListener(
-  "submit",
-  async e => {
-
-    e.preventDefault();
-
-
-    const email =
-      $("email").value.trim();
-
-    const password =
-      $("password").value;
-
-
-    const btn =
-      $("loginBtn");
-
-    const msg =
-      $("loginMsg");
-
-
-    msg.textContent = "";
-
-
-    if(
-      !email ||
-      !password
-    ){
-
-      msg.textContent =
-        "Email और Password दोनों भरें।";
-
-      msg.className =
-        "status err";
-
-      return;
-
-    }
-
-
-    btn.disabled = true;
-
-    btn.textContent =
-      "Logging in...";
-
-
-    try{
-
-      const {
-        response,
-        data
-      } = await jsonFetch(
-        "/api/login",
-        {
-
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify({
-              email,
-              password
-            })
-
-        }
-      );
-
-
-      if(
-        response.ok &&
-        data.ok
-      ){
-
-        msg.textContent =
-          "Login successful ✓";
-
-        msg.className =
-          "status ok";
-
-
-        showDashboard();
-
-        await loadMaterials();
-
-      }else{
-
-        msg.textContent =
-          data.error ||
-          "Invalid email or password.";
-
-        msg.className =
-          "status err";
-
-      }
-
-
-    }catch(err){
-
-      msg.textContent =
-        "Server connection failed: " +
-        err.message;
-
-      msg.className =
-        "status err";
-
-    }finally{
-
-      btn.disabled = false;
-
-      btn.textContent =
-        "Login";
-
-    }
-
-  }
-);
-
-
-
-/* =========================================
-   LOGOUT
-========================================= */
-
-$("logoutBtn").addEventListener(
-  "click",
-  async () => {
-
-    try{
-
-      await jsonFetch(
-        "/api/logout",
-        {
-          method:"POST"
-        }
-      );
-
-    }finally{
-
-      showLogin();
-
-      $("password").value = "";
-
-    }
-
-  }
-);
-
-
-
-/* =========================================
-   UPLOAD MATERIAL
-========================================= */
-
-$("materialForm").addEventListener(
-  "submit",
-  async e => {
-
-    e.preventDefault();
-
-
-    const btn =
-      $("uploadBtn");
-
-    const msg =
-      $("upmsg");
-
-
-    btn.disabled = true;
-
-    btn.textContent =
-      "Uploading...";
-
-    msg.textContent = "";
-
-
-    try{
-
-      const {
-        response,
-        data
-      } = await jsonFetch(
-        "/api/materials",
-        {
-
-          method:"POST",
-
-          body:
-            new FormData(
-              $("materialForm")
-            )
-
-        }
-      );
-
-
-      if(response.ok){
-
-        msg.textContent =
-          "Material uploaded successfully ✓";
-
-        msg.className =
-          "status ok";
-
-
-        $("materialForm").reset();
-
-        await loadMaterials();
-
-      }else{
-
-        msg.textContent =
-          data.error ||
-          "Upload failed.";
-
-        msg.className =
-          "status err";
-
-      }
-
-
-    }catch(err){
-
-      msg.textContent =
-        "Upload error: " +
-        err.message;
-
-      msg.className =
-        "status err";
-
-    }finally{
-
-      btn.disabled = false;
-
-      btn.textContent =
-        "⬆️ Upload Material";
-
-    }
-
-  }
-);
-
-
-
-/* =========================================
-   LOAD MATERIALS
-========================================= */
+    const r=await fetch("/api/materials",{method:"POST",body:new FormData($("materialForm")),credentials:"include"});
+    const data=await r.json().catch(()=>({}));
+    if(r.ok){
+      $("materialForm").reset();
+      $("upmsg").textContent=" ✓ Uploaded";
+      loadMaterials();
+    }else $("upmsg").textContent=" ✕ "+(data.error||"Upload failed");
+  }catch(err){$("upmsg").textContent=" ✕ Server error";}
+});
 
 async function loadMaterials(){
-
-  const box =
-    $("items");
-
-
-  box.classList.add(
-    "loading"
-  );
-
-
   try{
-
-    const {
-      response,
-      data
-    } = await jsonFetch(
-      "/api/materials"
-    );
-
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error ||
-        "Could not load materials"
-      );
-
-    }
-
-
-    $("count").textContent =
-      Array.isArray(data)
-        ? data.length
-        : 0;
-
-
-    if(
-      !Array.isArray(data) ||
-      data.length === 0
-    ){
-
-      box.innerHTML =
-        '<div class="empty">' +
-        'No materials yet.' +
-        '</div>';
-
-      return;
-
-    }
-
-
-    box.innerHTML =
-      data.map(x => {
-
-        const title =
-          esc(x.title);
-
-        const subject =
-          esc(x.subject);
-
-        const cls =
-          esc(x.class_name);
-
-        const type =
-          esc(x.type);
-
-        const id =
-          Number(x.id);
-
-        const file =
-          encodeURIComponent(
-            x.stored_name || ""
-          );
-
-
-        return `
-
-          <div class="item glass">
-
-            <div>
-              <b>
-                ${title}
-              </b>
-            </div>
-
-
-            <div class="meta">
-              ${subject}
-              • Class ${cls}
-              • ${type}
-            </div>
-
-
-            <div class="actions">
-
-              <a
-                class="btn"
-                style="
-                  padding:9px 12px;
-                  border-radius:10px;
-                  text-decoration:none;
-                  color:inherit
-                "
-                href="/uploads/${file}"
-                target="_blank"
-                rel="noopener"
-              >
-                Open
-              </a>
-
-
-              <button
-                class="danger"
-                type="button"
-                onclick="deleteMaterial(${id})"
-              >
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("");
-
-
-  }catch(err){
-
-    box.innerHTML =
-      '<div class="empty">' +
-      'Materials load नहीं हो सके: ' +
-      esc(err.message) +
-      '</div>';
-
-  }finally{
-
-    box.classList.remove(
-      "loading"
-    );
-
+    const r=await fetch("/api/materials");
+    const a=await r.json();
+    $("statMaterials").textContent=a.length;
+    $("materialCount").textContent=a.length;
+    if(!a.length){$("items").innerHTML='<div class="empty">No materials yet.</div>';return}
+    $("items").innerHTML=a.map(x=>`
+      <div class="item">
+        <div class="item-info">
+          <b>📄 ${esc(x.title)}</b>
+          <small>${esc(x.subject)} • Class ${esc(x.class_name)} • ${esc(x.type)}</small>
+        </div>
+        <div class="actions">
+          <a class="btn secondary" href="/uploads/${encodeURIComponent(x.stored_name)}" target="_blank">Open</a>
+          <button class="btn danger" onclick="delMaterial(${x.id})">Delete</button>
+        </div>
+      </div>`).join("");
+  }catch(e){
+    $("items").innerHTML='<div class="empty">Materials load नहीं हो पाए.</div>';
   }
-
 }
 
-
-
-/* =========================================
-   DELETE MATERIAL
-========================================= */
-
-async function deleteMaterial(id){
-
-  if(
-    !confirm(
-      "क्या आप यह material delete करना चाहते हैं?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    const {
-      response,
-      data
-    } = await jsonFetch(
-      "/api/materials/" +
-      encodeURIComponent(id),
-      {
-        method:"DELETE"
-      }
-    );
-
-
-    if(!response.ok){
-
-      alert(
-        data.error ||
-        "Delete failed."
-      );
-
-      return;
-
-    }
-
-
-    await loadMaterials();
-
-
-  }catch(err){
-
-    alert(
-      "Delete error: " +
-      err.message
-    );
-
-  }
-
+async function delMaterial(id){
+  if(!confirm("Delete this material?"))return;
+  await fetch("/api/materials/"+id,{method:"DELETE",credentials:"include"});
+  loadMaterials();
 }
 
-
-
-/* =========================================
-   HTML ESCAPE
-========================================= */
-
-function esc(value){
-
-  return String(
-    value ?? ""
-  ).replace(
-    /[&<>"']/g,
-    m => ({
-
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      "\"":"&quot;",
-      "'":"&#39;"
-
-    }[m])
-  );
-
+function saveQuiz(){
+  const q={
+    title:$("quizTitle").value.trim(),
+    cls:$("quizClass").value,
+    subject:$("quizSubject").value.trim(),
+    chapter:$("quizChapter").value.trim(),
+    question:$("quizQuestion").value.trim(),
+    a:$("qa").value.trim(),b:$("qb").value.trim(),
+    c:$("qc").value.trim(),d:$("qd").value.trim(),
+    correct:$("correct").value
+  };
+  if(!q.question||!q.a||!q.b){$("quizMsg").innerHTML='<div class="notice">Question और कम-से-कम A/B options भरें.</div>';return}
+  const arr=JSON.parse(localStorage.getItem("sirMaheeQuizzes")||"[]");
+  arr.push(q);localStorage.setItem("sirMaheeQuizzes",JSON.stringify(arr));
+  $("statQuizzes").textContent=arr.length;
+  $("quizMsg").innerHTML='<div class="notice">✓ Question saved locally. Backend Quiz API अगला step है.</div>';
+  renderQuizzes();
 }
 
+function renderQuizzes(){
+  const arr=JSON.parse(localStorage.getItem("sirMaheeQuizzes")||"[]");
+  $("statQuizzes").textContent=arr.length;
+  if(!arr.length){$("quizList").innerHTML="No quiz questions yet.";return}
+  $("quizList").innerHTML=arr.map((q,i)=>`
+    <div class="item"><div class="item-info"><b>${i+1}. ${esc(q.question)}</b>
+    <small>${esc(q.subject)} • Class ${esc(q.cls)} • Correct: ${q.correct}</small></div>
+    <button class="btn danger" onclick="deleteQuiz(${i})">Delete</button></div>`).join("");
+}
+function deleteQuiz(i){
+  const arr=JSON.parse(localStorage.getItem("sirMaheeQuizzes")||"[]");
+  arr.splice(i,1);localStorage.setItem("sirMaheeQuizzes",JSON.stringify(arr));renderQuizzes();
+}
 
+function saveSocial(){
+  const data={
+    instagram:$("instagram").value,youtube:$("youtube").value,
+    telegram:$("telegram").value,facebook:$("facebook").value,whatsapp:$("whatsapp").value
+  };
+  localStorage.setItem("sirMaheeSocial",JSON.stringify(data));
+  $("socialMsg").innerHTML='<div class="notice">✓ Social links saved.</div>';
+}
+function saveAnnouncement(){
+  const data={title:$("annTitle").value,message:$("annMessage").value,type:$("annType").value,date:new Date().toISOString()};
+  const arr=JSON.parse(localStorage.getItem("sirMaheeAnnouncements")||"[]");
+  arr.unshift(data);localStorage.setItem("sirMaheeAnnouncements",JSON.stringify(arr));
+  $("annMsg").innerHTML='<div class="notice">✓ Announcement saved.</div>';
+}
+function saveSettings(){
+  localStorage.setItem("sirMaheeSettings",JSON.stringify({
+    siteName:$("siteName").value,teacherName:$("teacherName").value,tagline:$("tagline").value
+  }));
+  $("settingsMsg").innerHTML='<div class="notice">✓ Settings saved.</div>';
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
 
-/* =========================================
-   START
-========================================= */
-
-checkSession();
-
+me();
 </script>
-
 </body>
 </html>
