@@ -23,7 +23,16 @@ if (!admin) {
     .run(bcrypt.hashSync(password, 12), email);
 }
 app.use(express.json());app.use(express.urlencoded({extended:true}));
-app.use(cookieSession({name:"sir_mahee_session",keys:[process.env.SESSION_SECRET||"dev-only-change-me"],httpOnly:true,sameSite:"lax",secure:false,maxAge:1000*60*60*8}));
+app.set("trust proxy", 1);
+
+app.use(cookieSession({
+  name: "sir_mahee_session",
+  keys: [process.env.SESSION_SECRET || "dev-only-change-me"],
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000
+}));
 app.use("/uploads",express.static(UPLOADS));app.use(express.static(path.join(ROOT,"public")));
 
 function auth(req,res,next){if(req.session?.userId)return next();res.status(401).json({error:"Login required"});}
