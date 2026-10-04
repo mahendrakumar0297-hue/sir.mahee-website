@@ -10,9 +10,17 @@ const db=new Database(path.join(ROOT,"sir_mahee.db"));
 db.pragma("journal_mode = WAL");
 db.exec(`CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,email TEXT UNIQUE,password_hash TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS materials(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,class_name TEXT NOT NULL,subject TEXT NOT NULL,chapter TEXT,description TEXT,type TEXT,filename TEXT,stored_name TEXT,mime TEXT,size INTEGER,created_at TEXT DEFAULT CURRENT_TIMESTAMP);`);
-const email=process.env.ADMIN_EMAIL||"admin@sirmahee.com",pass=process.env.ADMIN_PASSWORD||"change-this-password";
-if(!db.prepare("SELECT id FROM users WHERE email=?").get(email)){
- db.prepare("INSERT INTO users(email,password_hash) VALUES(?,?)").run(email,bcrypt.hashSync(pass,12));
+const email = process.env.ADMIN_EMAIL || "admin@sir.mahee.com";
+const password = process.env.ADMIN_PASSWORD || "change-this-password";
+
+const admin = db.prepare("SELECT id FROM users WHERE email=?").get(email);
+
+if (!admin) {
+  db.prepare("INSERT INTO users(email,password_hash) VALUES(?,?)")
+    .run(email, bcrypt.hashSync(password, 12));
+} else {
+  db.prepare("UPDATE users SET password_hash=? WHERE email=?")
+    .run(bcrypt.hashSync(password, 12), email);
 }
 app.use(express.json());app.use(express.urlencoded({extended:true}));
 app.use(cookieSession({name:"sir_mahee_session",keys:[process.env.SESSION_SECRET||"dev-only-change-me"],httpOnly:true,sameSite:"lax",secure:false,maxAge:1000*60*60*8}));
